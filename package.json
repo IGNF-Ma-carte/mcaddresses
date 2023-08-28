@@ -18,7 +18,7 @@
     "parcel-plugin-static-files-copy": "^2.6.0"
   },
   "dependencies": {
-    "mcutils": "git+https://github.com/IGNF-Ma-carte/mcutils",
+    "mcutils": "github:IGNF-Ma-carte/mcutils",
     "xlsx": "^0.18.2"
   },
   "staticFiles": {
