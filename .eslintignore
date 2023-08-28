@@ -1,0 +1,8 @@
+.vscode/*
+assets/*
+data/*
+dist/*
+img/*
+node_modules/*
+public/*
+.eslintrc.js

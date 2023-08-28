@@ -1,0 +1,30 @@
+{
+  "name": "mesadresses",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "parcel index.html",
+    "build": "parcel build ./index.html --no-source-maps --public-url . --out-dir ./docs",
+    "lint": "eslint --fix ./ --ignore-path .eslintignore|| exit 0"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "eslint": "^8.15.0",
+    "eslint-plugin-sonarjs": "^0.13.0",
+    "parcel-bundler": "^1.12.5",
+    "parcel-plugin-static-files-copy": "^2.6.0"
+  },
+  "dependencies": {
+    "mcutils": "git+https://gitlab.gpf-tech.ign.fr/cegedim/macarte/libs/mcutils",
+    "xlsx": "^0.18.2"
+  },
+  "staticFiles": {
+    "staticPath": [
+      "./assets"
+    ],
+    "watcherGlob": "**"
+  }
+}

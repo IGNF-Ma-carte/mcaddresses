@@ -1,0 +1,111 @@
+#action_div {
+  position: fixed;
+  z-index: 2;
+  top: 5rem;
+  left: 0;
+  bottom: 3rem;
+  right: 0;
+  background-color: #fff;
+  padding: 2rem 0;
+  overflow-y: auto;
+}
+
+#action_div h2 {
+  text-align: center;
+}
+#action_div h3 {
+  font-size: 25px;
+}
+
+#import {
+  max-width: 40em;
+  padding: 0 1em;
+  margin: 0 auto;
+}
+
+#import h3 {
+  text-align: center;
+}
+
+#fichier {
+  position: relative;
+  text-align: center;
+  height: 20em;
+  max-height: 40vh;
+  margin-top: 1.5em;
+  border: 1px solid #DDE1E6;
+}
+
+#fichier i {
+  font-size: 5em;
+}
+
+#fichier_txt {
+  margin-top: 0.5em;
+}
+
+[class^="fi-"] {
+  font: normal normal normal 14px/1 Font-IGN;
+}
+
+#import p {
+  color: #788089;
+  font-size: 13px;
+  margin-top: 0.2em;
+}
+
+#exemple {
+  cursor: pointer;
+  width: 14em;
+  height: 2.2em;
+  position: relative;
+  display: inline-block;
+  margin-bottom: 1em;
+}
+
+#chargement_f {
+  position: absolute;
+  inset:0;
+  font-size: 13px;
+  opacity: 0;
+}
+#fichier > div {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 100%;
+  transform: translate(-50%, -50%);
+}
+#fichier.red {
+  border: 1px solid #F45648;
+}
+
+#fichier_txt p.red {
+  color: #F45648;
+  margin-top: 1em;
+}
+
+#fichier.red #fichierImg {
+  color: #F45648;
+}
+
+#chargement_e {
+  display: inline-block;
+  position: relative;
+  top: 0.6em;
+}
+
+#import #import_buttons {
+  position: relative;
+  float: right;
+}
+
+
+#action_div h1 {
+  text-align: center;
+  font-size: 4rem;
+  color: #3993f3;
+}
+#action_div h1 .mc-help {
+  color: #091625;
+}

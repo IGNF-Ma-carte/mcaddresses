@@ -1,0 +1,195 @@
+/*****boutons*****/
+.ol-buttons {
+  margin-top: 1.5em;
+  margin-bottom: 1em;
+}
+
+.ol-buttons input {
+  height: 3em;
+}
+
+/*****dialog d'aide*****/
+.ol-ext-dialog.help .md-header, .ol-ext-dialog.help .md-header td{
+  background-color: #B6D688!important;
+  color: black;
+}
+
+/*****dialog de la patience de chargement*****/
+.ol-ext-dialog.import_patience form {
+  width: 35em;
+  height: 17em;
+}
+.ol-ext-dialog.import_patience form .ol-content {
+  text-align: center;
+}
+
+.ol-ext-dialog.import_patience #stop_geoc {
+  position: absolute;
+  bottom: 1em;
+  min-width: 11em;
+  left: 145px;
+}
+
+.ol-ext-dialog.import_patience #stop_geoc.in_progress {
+  left: 156px;
+}
+
+.ol-progress-message {
+  font-family: open sans;
+}
+
+/*****dialog du rapport de geocodage*****/
+.ol-ext-dialog.rapport form {
+  width: 63em;
+  height: 38em;
+}
+
+.ol-ext-dialog.rapport form .ol-content {
+  text-align: center;
+  margin-left: 1em;
+}
+
+.ol-ext-dialog.rapport form h3 {
+  text-align: left;
+  margin-bottom: 1em;
+  font-size: 25px;
+}
+
+.ol-ext-dialog.rapport form h2 {
+  font-size: 18px;
+}
+
+.ol-ext-dialog.rapport form p {
+  text-align: left;
+}
+
+.chart_container {
+  position: relative;
+  width: 350px;
+  height: 350px;
+}
+
+.chart_text {
+  position: absolute;
+  top: 11em;
+  right: 2em;
+  font-size: 15px;
+}
+
+.chart_text span {
+  font-weight: bold;
+}
+
+.chart_text i {
+  margin-right: 0.5em;
+  font-size: 18px;
+}
+
+.ol-ext-dialog.rapport form .ignore {
+  margin-left: 1.8em;
+}
+
+.very_good_points {
+  color: #90C149;
+}
+.good_points {
+  color: #F9D847;
+}
+.medium_points {
+  color: #F18345;
+}
+.no_point {
+  color: #B8BCC1;
+}
+
+.ol-ext-dialog.rapport .ol-buttons {
+  margin-top: 0;
+  margin-bottom: 0;
+  top: -1em;
+  position: relative;
+  right: 1.5em;
+}
+
+/*****dialog de modification d'adresse et ajout adresse*****/
+.ol-ext-dialog.modify_address, .ol-ext-dialog.add_address {
+  font-size: 15px;
+}
+
+.ol-ext-dialog.modify_address form, .ol-ext-dialog.add_address form{
+  width: 30em;
+}
+
+.ol-ext-dialog.modify_address h2, .ol-ext-dialog.add_address h2,
+.ol-ext-dialog.modify_address .ol-content, .ol-ext-dialog.add_address .ol-content {
+  margin: 1.5rem;
+}
+
+.ol-ext-dialog.modify_address label, .ol-ext-dialog.add_address label {
+  width: 100%;
+}
+
+/*****dialog chargement nouveau fichier *****/
+.ol-ext-dialog.new_import h2, .ol-ext-dialog.new_import .ol-content {
+  margin: 1.5rem;
+}
+
+/*****dialog suppression adresse*****/
+.ol-ext-dialog.feature_removal form {
+  padding: 2em;
+}
+
+.ol-ext-dialog.feature_removal h2 {
+  margin-bottom: 0;
+}
+
+.ol-ext-dialog.modify_address .ol-buttons, .ol-ext-dialog.add_address .ol-buttons {
+  margin-right: 1em;
+}
+
+/*****dialog config liste*****/
+.list_config_dlg h2 {
+  text-align: center;
+}
+
+/*****dialog export *****/
+.ol-ext-dialog.file_export form {
+  height: 26em;
+  width: 35em;
+}
+
+.ol-ext-dialog.file_export h2 {
+  margin-left: 1.5rem;
+  margin-top: 1.5rem;
+}
+
+.ol-ext-dialog.file_export .ol-content {
+  margin-left: 1.5rem;
+}
+
+.ol-ext-dialog.file_export label {
+  margin-bottom: 0.5em;
+  color: #788089;
+}
+
+/*****dialog enregistrement *****/
+.ol-ext-dialog.save_map .fi-check {
+  color: #307ccd;
+  margin-right: 0.5em;
+}
+
+.ol-ext-dialog.save_map .ol-buttons {
+  text-align: center;
+}
+
+ .ol-ext-dialog.save_map .ol-buttons input[value="Reprendre la carte"] {
+  margin-left: 0;
+ }
+
+@media screen and (max-width: 860px) {
+  .chart_container {
+    float: right;
+  }
+  .chart_text {
+    right: unset;
+  }
+}
