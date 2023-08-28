@@ -1,5 +1,5 @@
 # mcaddresses
-Macarte geocoder app
+*Macarte geocoder app*
 
 Cette application utilise les services de [géocodage de l'IGN](https://geoservices.ign.fr/documentation/services/api-et-services-ogc/service-de-geocodage-20) pour retrouver la position d'un à partir d'une adresse.
 Elle offre une interface interactive pour corriger / modifier le résultat du géocodage.
@@ -16,6 +16,7 @@ Vous pouvez test les derniers [développements en ligne](https://ignf-ma-carte.g
 NB: l'instance de test est branchée sur la base de donnée de [qualification du site Ma carte](https://macarte-qualif.ign.fr/). Vous devez avoir un compte sur cette base pour certaines opérations.
 
 <img src="https://upload.wikimedia.org/wikipedia/commons/c/c8/Flag_of_the_United_Kingdom_%285-8%29.svg" height=20 align="left" />
+
 You can test the last [dev online](https://ignf-ma-carte.github.io/mcaddresses/).   
 NB: tests use the qualification instance and may [have an account](https://macarte-qualif.ign.fr/) on it to save the map online.
 
