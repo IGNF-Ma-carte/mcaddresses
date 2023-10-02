@@ -1,4 +1,4 @@
-let alerte = false;
+let alert = false;
 
 window.onbeforeunload = function() {
   return alert ? "" : null;
@@ -6,7 +6,7 @@ window.onbeforeunload = function() {
 
 /** Set alert on unload */
 function setAlerte(bool) {
-  alerte = bool;
+  alert = bool;
 }
 
 export default setAlerte

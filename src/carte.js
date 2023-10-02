@@ -2,6 +2,7 @@ import Carte from 'mcutils/Carte';
 import VectorSource from 'ol/source/Vector';
 import VectorStyle from 'mcutils/layer/VectorStyle';
 import colors from './colors';
+import setAlerte from './unload';
 
 /**
  * Renvoie le layer des features
@@ -61,6 +62,10 @@ carte.on('read', (e) => {
   };
   
   featLayer.setIgnStyle(layerStyle);
+
+  featLayer.getSource().on(['addfeature','changefeature','removefeature'], () => {
+    setAlerte(true)
+  })
   
   var tempFeatLayer = new VectorStyle({
     source: new VectorSource(), 

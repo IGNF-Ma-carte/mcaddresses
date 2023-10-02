@@ -9,7 +9,6 @@ import * as XLSX from 'xlsx/xlsx.mjs';
 import carte, { getFeatureLayer } from '../carte';
 import GeoJSON from 'ol/format/GeoJSON';
 
-import VectorStyle from 'mcutils/format/layer/VectorStyle'
 import {transformExtent} from 'ol/proj'
 
 import api from 'mcutils/api/api';
@@ -17,6 +16,7 @@ import {getEditorURL} from 'mcutils/api/serviceURL';
 import saveCarte from 'mcutils/dialog/saveCarte';
 
 import options from 'mcutils/config/config';
+import setAlerte from '../unload';
 
 var exportFile;
 
@@ -370,24 +370,30 @@ const getExportLink = function(type) {
 };
 
 const switchToMaCarte = function() {
-    const format = new VectorStyle();
-    //const layerData = format.write(getFeatureLayer());
+    // Cart options
     const bbox = carte.getMap().getView().calculateExtent();
-    //var center = toLonLat(carte.map.getView().getCenter());
-    var opt = {active: "true", type: "macarte", premium: "default", bbox: transformExtent(bbox, carte.getMap().getView().getProjection(), 'EPSG:4326') };
+    var opt = {
+        active: "true", 
+        type: "macarte", 
+        premium: "default", 
+        bbox: transformExtent(bbox, carte.getMap().getView().getProjection(), 'EPSG:4326') 
+    };
 
     var html = "<i class='fi-check'></i>La carte a été enregistrée avec succès." +
                "<br>" + 
                "Vous pouvez la reprendre pour la modifier (lui ajouter des fonds, des informations, la partager, etc.) ou créer une narration basée sur cette carte.";
 
     var callback = function(lien) {
+        setAlerte(false)
         dialog.show({
-            content: html, title: "Enregistrement fichier", className: "save_map",
-            buttons: { edit: 'Reprendre la carte', story: 'Charger', cancel: 'Continuer sur les adresses' },
-            onButton: (click) => {
-                switch (click) {
+            content: html, 
+            title: "Enregistrement fichier", 
+            className: "save_map",
+            buttons: { edit: 'Reprendre la carte', /* story: 'Charger',*/ cancel: 'Continuer sur les adresses' },
+            onButton: b => {
+                switch (b) {
                     case 'edit':
-                        window.open(lien);
+                        document.location.href = lien;
                         break;
                     case 'story':
                         window.open(options.server + "edition/narration/");
@@ -398,29 +404,18 @@ const switchToMaCarte = function() {
                 }
             }
         });
-        document.getElementsByClassName("ol-buttons")[0].childNodes[0].type = "submit";
-        document.getElementsByClassName("ol-buttons")[0].childNodes[1].type = "submit";
     };
 
     saveCarte(opt, mapOpt => {
         const data = carte.write()
-        // const features = data.layers[data.layers.length - 1].features
-        data.layers[data.layers.length - 1].features.forEach(f => {
-            var d = getFeatureExportData(f.attributes)
-            var lonlat = toLonLat(f.coords);
-        d.longitude = lonlat[0];
-        d.latitude = lonlat[1];
-        f.attributes = d;
-        });
-
         const postMap = function() {
+            dialog.showWait('Enregistrement en cours...')
             api.postMap(mapOpt, data, (e) => {
-                if(e.status == 401) {
+                if (e.status == 401) {
                     connectDialog(postMap);
                 }
                 else {
                     callback(getEditorURL(e))
-                    //window.open(getEditorURL(e));
                 }
             });
         };
