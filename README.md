@@ -1,6 +1,12 @@
 # mcaddresses
 *Macarte geocoder app*
 
+![](https://img.shields.io/github/v/release/IGNF-Ma-carte/mcaddresses)
+![](https://img.shields.io/github/stars/IGNF-Ma-carte/mcaddresses)
+![](https://img.shields.io/github/commit-activity/m/IGNF-Ma-carte/mcaddresses)
+![](https://img.shields.io/github/contributors/IGNF-Ma-carte/mcaddresses)
+![](https://img.shields.io/github/license/IGNF-Ma-carte/mcaddresses)
+
 Cette application utilise les services de [géocodage de l'IGN](https://geoservices.ign.fr/documentation/services/api-et-services-ogc/service-de-geocodage-20) pour retrouver la position d'un à partir d'une adresse.
 Elle offre une interface interactive pour corriger / modifier le résultat du géocodage.
 
