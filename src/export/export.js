@@ -407,11 +407,21 @@ const switchToMaCarte = function() {
     };
 
     saveCarte(opt, mapOpt => {
-        const data = carte.write()
+        // Write uncompress
+        const data = carte.write(true)
+        // Convert properties
+        data.layers[data.layers.length - 1].features.forEach(f => {
+            var d = getFeatureExportData(f.attributes)
+            var lonlat = toLonLat(f.coords);
+            d.longitude = lonlat[0];
+            d.latitude = lonlat[1];
+            f.attributes = d;
+        });
         const postMap = function() {
             dialog.showWait('Enregistrement en cours...')
             api.postMap(mapOpt, data, (e) => {
                 if (e.status == 401) {
+                    dialog.close();
                     connectDialog(postMap);
                 }
                 else {
