@@ -4,8 +4,9 @@ import carte, { getFeatureLayer, getTempFeatureLayer } from "../carte";
 import { clearGeocodage } from "../geocodage/geocode";
 import { setListSelectedIndex } from "../liste_adresses/createList";
 import { actionWindow, clearParseResults, clearImportedFile } from "./selectFile";
-import import_geocod_html from '../../pages/import_geocod.html'
 import { setListHeader, setListHeaderShow } from "../liste_adresses/createList";
+
+import import_geocod_html from '../../pages/import_geocod-page.html'
 
 /**
  * Dialog pour l'import d'un nouveau fichier

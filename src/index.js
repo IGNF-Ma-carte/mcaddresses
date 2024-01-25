@@ -10,8 +10,9 @@ import { actionWindow } from './import/selectFile'
 import { newFileImportDialog } from './import/newImport'
 import { addAddressDialog } from './modification_adresse/addAddress'
 import { exportDialog, switchToMaCarte } from './export/export.js'
-import import_geocod_html from '../pages/import_geocod.html'
 import './unload'
+
+import import_geocod_html from '../pages/import_geocod-page.html'
 
 charte.setApp('geocod', 'Ma carte');
 

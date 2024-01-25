@@ -6,11 +6,12 @@ import carte from "../carte";
 import { setGeocodePatience } from "../geocodage/loader";
 import { actionWindow } from "./selectFile";
 import { setFileLineSectionEvents, addOptionsToSelect, setSeparatorSectionEvents, setColumnSectionEvents } from "./parameters";
-import preview_html from '../../pages/import_preview.html';
-import import_geocod_html from '../../pages/import_geocod.html';
 import {setRequestListByPack } from "../geocodage/requests";
 import helpStr from '../help';
 import CSVPreview from "mcutils/control/CSVPreview";
+
+import preview_html from '../../pages/import_preview-page.html';
+import import_geocod_html from '../../pages/import_geocod-page.html';
 
 var csvp;
 /**

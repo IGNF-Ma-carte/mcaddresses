@@ -7,11 +7,12 @@ import { manualShiftValidation, manualShifting } from "./manuelShift";
 import { getSelectedFeature, selectAddressAction } from "../interactions/selectInteraction";
 import helpDialog from "mcutils/dialog/helpDialog";
 import helpStr from '../help'
-import address_select_html from '../../pages/address_select.html'
-import alternative_html from '../../pages/alternative.html'
-import cluster_html from '../../pages/cluster.html'
-import unselect_html from '../../pages/unselect.html'
-import manual_shift_html from '../../pages/manual_shift.html'
+
+import address_select_html from '../../pages/address_select-page.html'
+import alternative_html from '../../pages/alternative-page.html'
+import cluster_html from '../../pages/cluster-page.html'
+import unselect_html from '../../pages/unselect-page.html'
+import manual_shift_html from '../../pages/manual_shift-page.html'
 
 const addFormInputsListeners = function() {
     document.getElementById("form").querySelectorAll("input").forEach(elt => {
