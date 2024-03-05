@@ -89,6 +89,7 @@ const preview = function (csv) {
     
         geocodage.currentPack = 0;
         geocodage.altiCurrentPack = 0;
+        geocodage.type = gType;
     
         document.getElementById("action_div").classList.toggle("hidden");
         document.body.querySelectorAll('[data-role]').forEach(elt => { //eslint-disable-line sonarjs/no-identical-functions
