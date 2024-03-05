@@ -19,7 +19,11 @@ import dialog from "mcutils/dialog/dialog";
  *                        Si la valeur est -1, la feature associée n'existe pas encore dans la variable
  */
  const unitaryGeocode = function(data, ind) {
-    var proms_batch = createRequestList(data, "address").map(url => fetch(url, { method: 'GET', mode: 'cors', cache: 'default' }));
+  var geocodingType = "address";
+  if(geocodage.type == "parcel") {
+    geocodingType = "parcel";
+  }
+    var proms_batch = createRequestList(data, geocodingType).map(url => fetch(url, { method: 'GET', mode: 'cors', cache: 'default' }));
     var timeout_proms_batch = proms_batch.map(p => {return Promise.race([p, Promise.delay({ok: false})])});
     setGeocodePatience(false, true);
     geocodePatience(timeout_proms_batch, false, true);

@@ -21,7 +21,6 @@ const calcIndice = function(feat, data) {
     var depAndPostalCode = getDepAndPostalCode(input);
     var dep = depAndPostalCode[0];
     var cpost = depAndPostalCode[1];
-  
     var score = properties._score;
   
     var correctDep = true;

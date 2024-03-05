@@ -51,13 +51,14 @@ const getFeatureIndex = function(f) {
 const clearGeocodage = function() {
   stopGeocode = false;
   geocodage = {};
+  geocodage.type = undefined;
   geocodage.packLength = 100;
   geocodage.removedIndex = [];
   geocodage.getFeatureIndex = getFeatureIndex;
   geocodage.results = { olFeatures: [], apiFeatures : [] };
   geocodage.results.tryAgain = [];
   window.geoc = geocodage;
-}
+};
 
 geocodage.packLength = 100;
 geocodage.removedIndex = [];
@@ -196,10 +197,6 @@ const geocodeAgain = function (rqstList, firstIteration) {
         if(response[i].ok){
           r.push(response[i]);
         }
-        else {
-          geocodage.againError = [];
-          geocodage.againError.push(i);
-        }
       }
       Promise.all(r.map(resp => resp.json()))
     .then(function (res) {
@@ -223,9 +220,6 @@ const geocodeAgain = function (rqstList, firstIteration) {
         }
       }
       var tryOnceMore = [];
-      for(let i in geocodage.againError) {
-        res.splice(geocodage.againError[i],0,false);
-      }
       for (let i in res) {
         if(!res[i]) {
           continue;

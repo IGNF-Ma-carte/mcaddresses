@@ -12,13 +12,13 @@ if(!apiFeature) {
 
 var prop = apiFeature.properties;
 
-result = {"_score" : prop._score,
+result = {"_score" : prop.score,
              "quality" : getAddressQuality(prop),
              "coordinates" : [apiFeature.geometry.coordinates[0], apiFeature.geometry.coordinates[1]],
              "alternatives": prop.alternatives
          };
 
-if(prop._type == "ban")
+if(prop._type == "ban" || prop._type == "address")
 {
     result._type = "address";
     result.inseeCode = prop.citycode;
@@ -38,16 +38,32 @@ if(prop._type == "ban")
 if(prop._type == "poi")
 {
     result._type = prop._type;
-    result.inseeCode = prop.citycode[0];
-    result.department = prop.citycode[1];
-    result.postalCode = prop.postcode[0];
-    result.city = prop.toponym + " " + prop.city[0];
+
+    if(prop.citycode) {
+      result.inseeCode = prop.citycode[0];
+      result.department = prop.citycode[1];
+    } else {
+      result.inseeCode = "undefined";
+      result.department = "undefined";
+    }
+    
+    if(prop.postcode) {
+      result.postalCode = prop.postcode[0];
+    } else {
+      result.postalCode = "undefined";
+    }
+
+    result.city = prop.toponym;
+    if(prop.city) {
+      result.city += " " + prop.city?prop.city[0]:"";
+    }
     return result;
 }
 
-if(prop._type == "cadastral")
+if(prop._type == "cadastral" || "parcel")
 {
-    result._type = prop._type;
+    result._type = "cadastral";
+    result._score = 1;
     result.id = prop.id;
     result.department = prop.departmentcode;
     result.city = prop.city;
@@ -72,7 +88,7 @@ const getAddressQuality = function(properties) {
             }
         }
     }
-    else if(properties._type == "ban") {
+    else if(properties._type == "ban" || properties._type == "address") {
       if(properties.type == "housenumber") {
         quality = "Numéro";
       }
