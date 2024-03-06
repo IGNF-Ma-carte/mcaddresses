@@ -2,9 +2,8 @@ import { geocodage } from "./geocode";
 import { parseResults } from "../import/selectFile";
 import { toLonLat } from 'ol/proj'
 
-// var geocodLink = "https://geocodage.ign.fr/look4/";
-var geocodLink = "https://wxs.ign.fr/essentiels/geoportail/geocodage/rest/0.1/";
-var altiGeocodLink = "https://wxs.ign.fr/calcul/alti/rest/elevation.xml?gp-access-lib=3.0.6";
+var geocodLink = "https://data.geopf.fr/geocodage/";
+var altiGeocodLink = "https://data.geopf.fr/altimetrie/1.0/calcul/alti/rest/elevation.json?resource=ign_rge_alti_wld&delimiter=|&indent=false&measures=false&zonly=false";
 var requestListByPack;
 /**
  * Met à jour la variable "requestListByPack"
@@ -87,17 +86,16 @@ const createAltiRequestListByPack = function() {
       }
       else {
         address = createAddress(data[i], false, noPostCode);
+      };
+      if(!address.match(/^[aA0-zZ9]/)) {
+        address = "a" + address;
       }
-      // var r = geocodLink + geocodingType + "/search?q=" + encodeURIComponent(address);
       var r = geocodLink + "search?q=" + encodeURIComponent(address) + "&index=" + geocodingType;
-  
-      // if(geocodage.departement && parseResults.columnCorrespondance["[Département]"]) {
-      //   var dep = data[i][parseResults.columnCorrespondance["[Département]"] - 1];
-      //   if(dep.length == 1) {
-      //     dep = "0" + dep;
-      //   }
-      //   r += "&filters[inseeCode]=" + dep;
-      // }
+
+      if(geocodingType == "parcel") {
+        r += "&returntruegeometry=true";
+      }
+
       res.push(r);
     }
   
@@ -118,7 +116,7 @@ const createAltiRequestListByPack = function() {
         var coord = data[i].getGeometry().getCoordinates();
         lonlat = toLonLat(coord); 
       }
-      res.push(altiGeocodLink + "&lon=" + lonlat[0] + "&lat=" + lonlat[1] + "&indent=false&crs='CRS:84'&zonly=false"); 
+      res.push(altiGeocodLink + "&lon=" + lonlat[0] + "&lat=" + lonlat[1]); 
     }
     return res;
   };
@@ -135,7 +133,11 @@ const createAltiRequestListByPack = function() {
       var coord = feature.getGeometry().getCoordinates();
       lonlat = toLonLat(coord); 
     }
-    return geocodLink + 'reverse?index=address&searchgeom={"type":"Circle","coordinates":['+ lonlat[0] +',' + lonlat[1] + '],"radius":10}&returntruegeometry=false';
+    var type  = "address";
+    if(geocodage.type == "parcel") {
+      type = "parcel";
+    }
+    return geocodLink + 'reverse?index=' + type + '&searchgeom={"type":"Circle","coordinates":['+ lonlat[0] +',' + lonlat[1] + '],"radius":10}&returntruegeometry=false';
   };
   
   /**
@@ -177,10 +179,26 @@ const createAltiRequestListByPack = function() {
     address = address.replace(/[Bb][Pp]\s{0,1}[0-9]{0,5}/g, "").replace(/\s\s/g," ").trim();
   
     address = abbreviationManagement(address);
+
+    address = getCorrectAddressFormat(address);
   
     return address;
   };
   
+  /**
+   * Renvoie une adresse qui commence par une lettre ou un chiffre
+   * @param {*} address 
+   * @returns 
+   */
+  const getCorrectAddressFormat = function(address) {
+    if(address.length && !address.match(/^[aA0-zZ9éèêàïîù]/)) {
+      return getCorrectAddressFormat(address.substring(1));
+    } else {
+      return address;
+    }
+    
+  };
+
   /**
    * Essaye de détecter les abréviations dans l'adresse pour remettre le mot en entier
    * @param {string} address:  l'adresse

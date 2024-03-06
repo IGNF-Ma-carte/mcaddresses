@@ -1,10 +1,9 @@
 import { geocodage } from "./geocode";
 import { parseResults } from "../import/selectFile";
 import { getFeatureLayer } from "../carte";
-import formatAddress from "./formatAddress";
 import Feature from 'ol/Feature';
 import Point from 'ol/geom/Point';
-import { fromLonLat} from 'ol/proj'
+import { fromLonLat} from 'ol/proj';
 import colors from "../colors";
 import { isParcel } from "../modification_adresse/address_fct";
 /**
@@ -35,8 +34,7 @@ import { isParcel } from "../modification_adresse/address_fct";
    * @returns {object} feature openlayers
    */
   const createFeat = function(item, data) {
-    var feat = new Feature({});
-    if(item.coordinates) {
+    var feat = new Feature({});if(item.coordinates) {
       feat = new Feature({
         geometry: new Point(fromLonLat(item.coordinates))
       });

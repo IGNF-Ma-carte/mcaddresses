@@ -68,6 +68,7 @@ if(prop._type == "cadastral" || "parcel")
     result.department = prop.departmentcode;
     result.city = prop.city;
     result.inseeCode = prop.departmentcode + prop.municipalitycode;
+    result.trueGeometry = prop.truegeometry;
     return result;
 }
 };
