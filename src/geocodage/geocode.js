@@ -1,6 +1,7 @@
 import { parseResults } from "../import/selectFile.js";
 import { requestListByPack } from "./requests.js";
 import carte from '../carte.js';
+import { getFeatureLayer } from "../carte";
 import dialog from "mcutils/dialog/dialog";
 import { createList, listHeader, listHeaderShow, setListHeader } from "../liste_adresses/createList.js";
 import { updatePanelView } from "../modification_adresse/address_fct.js";
@@ -13,6 +14,8 @@ import {createAddress, createRequestList} from "./requests.js";
 import { calcIndice } from "./scoreWeighting.js";
 import { altiGeocode} from "./alticodage.js";
 import { addFeat } from "./features.js";
+import FeatureList from "ol-ext/control/FeatureList.js"
+import { setList } from "../liste_adresses/setList.js";
 
 var geocodage = {};
 
@@ -415,7 +418,31 @@ const getBestScoreIndex = function(elem, data) {
   for(let i in listHeader) { //eslint-disable-line no-unused-vars
     listHeaderShow.push(true);
   }
-  createList(); 
+
+  //createList(); 
+  // var listCtrl = new FeatureList({
+  //   title: 'Liste de géocodage',
+  //   // className: 'ol-bottom',
+  //   collapsed: false,
+  //   features: geocodage.results.olFeatures,
+  //   // target: document.body
+  // });
+  //console.log(listCtrl);
+  //listCtrl.enableSort('nom', 'region', 'mag')
+  //carte.getMap().addControl (listCtrl);
+  //listCtrl.setColumns(["_score"]);
+  // listCtrl.on('select', function(e) {
+  //   selecti.getFeatures().clear();
+  //   selecti.getFeatures().push(e.feature);
+  //   showInfo(e.feature)
+  // });
+  // listCtrl.on('dblclick', function(e) {
+  //   map.getView().fit(e.feature.getGeometry().getExtent())
+  //   map.getView().setZoom(carte.getView().getZoom() - 1)
+  // })
+
+  setList();
+
   updatePanelView("unselect");
 };
 

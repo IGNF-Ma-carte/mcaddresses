@@ -6,7 +6,6 @@ import { setResizeButtonEvent } from "./resizeList";
 import { setConfigButtonsEvent } from "./listConfig";
 import { setSortableColumnsEvent, getSortIndex } from "./sortList";
 import { selectAdressListEvent } from "./selectAddress";
-import { isParcel } from "../modification_adresse/address_fct";
 
 var listSelectedIndex = -1;
 

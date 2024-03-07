@@ -47,6 +47,7 @@ import { isParcel } from "../modification_adresse/address_fct";
       }
       else {
         feat.get("properties")[i] = item[i];
+        feat.set(i, item[i]);
       }
     }
 
