@@ -4,8 +4,8 @@ import { getTempFeatureLayer } from "../carte";
 import { unselectAction } from "./unselectInteraction";
 import { updatePanelView, getColorClass } from "../modification_adresse/address_fct";
 import { parseResults } from "../import/selectFile";
-import { listSelectedIndex, setListSelectedIndex } from "../liste_adresses/createList";
 import { selectClusterAction } from "./selectClusterInteraction";
+import { listCtrl } from "../liste_adresses/setList";
 
 /**
  * Renvoie la feature openlayers actuellement sélectionnée
@@ -115,12 +115,7 @@ const selectAddressAction = function (f) {
         document.getElementById("manual_shifting").classList.toggle("hidden");
     }
 
-    if (listSelectedIndex > -1) {
-        document.getElementById("address" + listSelectedIndex).classList.toggle("selected");
-    }
-    document.getElementById("address" + geocodage.getFeatureIndex(f)).classList.toggle("selected");
-    setListSelectedIndex(geocodage.getFeatureIndex(f));
-    document.getElementById("address" + geocodage.getFeatureIndex(f)).scrollIntoView({ behavior: "smooth", block: "center" });
+    listCtrl.select(f);
 };
 
 export {getSelectedFeature, selectAddressAction};

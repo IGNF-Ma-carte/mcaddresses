@@ -1,5 +1,5 @@
 import { getSelectedFeature, selectAddressAction } from "../interactions/selectInteraction";
-import { getAddressLabelFromFeat } from "../geocodage/features";
+import { getAddressLabelFromFeat, setPropertiesForList } from "../geocodage/features";
 import { updatePanelView } from "./address_fct";
 import { getColorClass } from "./address_fct";
 import Feature from 'ol/Feature';
@@ -8,8 +8,8 @@ import {boundingExtent} from 'ol/extent';
 import { getTempFeatureLayer, getFeatureLayer } from "../carte";
 import { geocodage } from "../geocodage/geocode";
 import colors from "../colors";
-import { updateListAddress } from "../liste_adresses/listUpdate";
 import { uniqueAltiGeocod } from "../geocodage/alticodage";
+import { listCtrl } from "../liste_adresses/setList";
 
 /**
  * Affiche les alternatives d'une adresse
@@ -74,10 +74,15 @@ const showAlternatives = function() {
      * @param {integer} selectedIndex : l'indice de l'alternative sélectionnée
      */
     const selectAlternative = function(selectedIndex) {
+
         var olFeatInd = geocodage.getFeatureIndex(getSelectedFeature());
 
             var alternative = getSelectedFeature().get("alternatives")[selectedIndex];
             alternative.set("originalIndex", getSelectedFeature().get("originalIndex"));
+
+            alternative = setPropertiesForList(alternative);
+            alternative.set("#", getSelectedFeature().get("#"));
+
             var selectAlternative = function() {
                 alternative.set("alternatives", getSelectedFeature().get("alternatives"));
                 alternative.get("alternatives").splice(selectedIndex,1);               
@@ -93,14 +98,14 @@ const showAlternatives = function() {
                     alternative.setIgnStyle("symbolColor", color);
                     alternative.setIgnStyle("pointColor", color);
                 }
-                if (score > 0.8) {
+                if(score == 99) {
+                    setStyle(colors.manual);
+                } else if (score > 0.8) {
                     setStyle(colors.veryGood);
                 } else if (score > 0.5) {
                     setStyle(colors.good);
                 } else if (score > 0){
                     setStyle(colors.medium);
-                } else {
-                    setStyle(colors.manual);
                 }
     
                 getFeatureLayer().getSource().removeFeature(geocodage.results.olFeatures[olFeatInd]);
@@ -108,11 +113,12 @@ const showAlternatives = function() {
                 getFeatureLayer().getSource().addFeature(geocodage.results.olFeatures[olFeatInd]);
                 getTempFeatureLayer().getSource().clear();
                 getTempFeatureLayer().getSource().addFeature(geocodage.results.olFeatures[olFeatInd]);
+
+                listCtrl.setColumns(listCtrl.getColumns());
     
                 carte.getInteraction("select").getFeatures().clear();
                 carte.getInteraction("select").getFeatures().push(geocodage.results.olFeatures[olFeatInd]);
     
-                updateListAddress("modify");
                 selectAddressAction(geocodage.results.olFeatures[olFeatInd]);
     
                 carte.getMap().getView().setCenter(geocodage.results.olFeatures[olFeatInd].getGeometry().getCoordinates());

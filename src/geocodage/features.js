@@ -34,7 +34,8 @@ import { isParcel } from "../modification_adresse/address_fct";
    * @returns {object} feature openlayers
    */
   const createFeat = function(item, data) {
-    var feat = new Feature({});if(item.coordinates) {
+    var feat = new Feature({});
+    if(item.coordinates) {
       feat = new Feature({
         geometry: new Point(fromLonLat(item.coordinates))
       });
@@ -73,8 +74,46 @@ import { isParcel } from "../modification_adresse/address_fct";
     for(let i in parseResults.header) {
       feat.get("data")[parseResults.header[i]] = data[i];
     }
-      return feat;
+      //retourne la feature avec les attributs qui vont bien pour la création de la liste d'adresses
+      return setPropertiesForList(feat);
   };
+
+  /**
+   * Formate la feature pour avoir les attributs nécessaires à la création de la liste d'adresses
+   * @param {*} feat 
+   * @returns 
+   */
+  const setPropertiesForList = function(feat) {
+    let prop = feat.get("properties");
+
+    feat.set("#", geocodage.results.olFeatures.length + 1);
+
+    feat.set("Score", Math.round(prop._score*100)/100);
+
+    feat.set("Qualité", prop.quality||"");
+
+    feat.set("Adresse géocodée", prop.geocodedAddress);
+
+    if(feat.get("properties").altitude) {
+      feat.set("Altitude", feat.get("properties").altitude);
+    }
+
+    for(let i in feat.get("data")) {
+        feat.set(i, feat.get("data")[i]);
+    }
+
+    feat.set("Code INSEE",prop.inseeCode||"");
+
+    if(prop.coordinates)
+    {
+        feat.set("Longitude",prop.coordinates[0]);
+        feat.set("Latitude",prop.coordinates[1]);
+    } else{
+        feat.set("Longitude","");
+        feat.set("Latitude","");
+    }
+    return feat;
+  }
 
   /**
  * Renvoie l'adresse associée à une feature
@@ -103,4 +142,4 @@ const getAddressLabelFromFeat = function (f, separated) {
   return f.get("properties").id + " " + f.get("properties").city;
 };
 
-  export {createFeat, addFeat, getAddressLabelFromFeat};
+  export {createFeat, addFeat, getAddressLabelFromFeat, setPropertiesForList};

@@ -1,9 +1,9 @@
 import { geocodage, stopGeocode, geocode, endGeocodAction } from "./geocode";
 import { createAltiRequestListByPack, altiGeocodLink, requestListByPack } from "./requests";
-import { updateListAddress } from "../liste_adresses/listUpdate";
 import { toLonLat } from 'ol/proj'
 import { setGeocodePatience, updatePatience, geocodePatience } from "./loader";
 import dialog from "mcutils/dialog/dialog";
+import { listCtrl } from "../liste_adresses/setList";
 
 /**
  * Alticodage d'un paquet d'adresses
@@ -68,6 +68,7 @@ const altiGeocode = function()
 
        for(let i = start; i<geocodage.altitudeArray.length; i++) {
          geocodage.results.olFeatures[i].get("properties").altitude = geocodage.altitudeArray[i];
+         geocodage.results.olFeatures[i].set("Altitude", geocodage.altitudeArray[i]);
        }
        geocodage.altiCurrentPack++;
        if (geocodage.currentPack < requestListByPack.length && !stopGeocode) {
@@ -119,7 +120,8 @@ const altiGeocode = function()
           }
           geocodage.altitudeArray[geocodage.getFeatureIndex(feature)] = alti;
           feature.get("properties").altitude = alti;
-          updateListAddress("modify");
+          feature.set("Altitude", alti);
+          listCtrl.setColumns(listCtrl.getColumns());
           dialog.close();
           if(callback) {
             callback();

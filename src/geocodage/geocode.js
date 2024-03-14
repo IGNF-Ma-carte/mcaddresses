@@ -1,9 +1,7 @@
 import { parseResults } from "../import/selectFile.js";
 import { requestListByPack } from "./requests.js";
 import carte from '../carte.js';
-import { getFeatureLayer } from "../carte";
 import dialog from "mcutils/dialog/dialog";
-import { createList, listHeader, listHeaderShow, setListHeader } from "../liste_adresses/createList.js";
 import { updatePanelView } from "../modification_adresse/address_fct.js";
 import Chart from "chart.js/auto";
 import colors from "../colors";
@@ -14,7 +12,6 @@ import {createAddress, createRequestList} from "./requests.js";
 import { calcIndice } from "./scoreWeighting.js";
 import { altiGeocode} from "./alticodage.js";
 import { addFeat } from "./features.js";
-import FeatureList from "ol-ext/control/FeatureList.js"
 import { setList } from "../liste_adresses/setList.js";
 
 var geocodage = {};
@@ -35,17 +32,7 @@ const setStopGeocode = function(bool) {
  * @returns 
  */
 const getFeatureIndex = function(f) {
-  var ind = f.get("originalIndex"); 
-  if(!geocodage.removedIndex.length) {
-    return ind;
-  }
-  var count = 0;
-  for(var i in geocodage.removedIndex) {
-    if(ind > geocodage.removedIndex[i]) {
-      count++;
-    }
-  }
-  return ind - count;
+  return f.get("#")-1;
 };
 
 /**
@@ -56,7 +43,6 @@ const clearGeocodage = function() {
   geocodage = {};
   geocodage.type = undefined;
   geocodage.packLength = 100;
-  geocodage.removedIndex = [];
   geocodage.getFeatureIndex = getFeatureIndex;
   geocodage.results = { olFeatures: [], apiFeatures : [] };
   geocodage.results.tryAgain = [];
@@ -64,7 +50,6 @@ const clearGeocodage = function() {
 };
 
 geocodage.packLength = 100;
-geocodage.removedIndex = [];
 geocodage.getFeatureIndex = getFeatureIndex;
 geocodage.results = { apiFeatures: [], olFeatures: [], apiFeatures : [] };
 geocodage.results.tryAgain = [];
@@ -403,43 +388,6 @@ const getBestScoreIndex = function(elem, data) {
   });
 
   setTimeout(() => carte.getMap().updateSize(), 300);
-  var header = ["Score", "Qualité", "Adresse géocodée"];
-  if(geocodage.altitude) {
-      header.push("Altitude");
-  }
-  for(let i in parseResults.header) {
-      header.push(parseResults.header[i]);
-  }
-  header.push("Code INSEE");
-  header.push("Longitude");
-  header.push("Latitude");
-
-  setListHeader(header);
-  for(let i in listHeader) { //eslint-disable-line no-unused-vars
-    listHeaderShow.push(true);
-  }
-
-  //createList(); 
-  // var listCtrl = new FeatureList({
-  //   title: 'Liste de géocodage',
-  //   // className: 'ol-bottom',
-  //   collapsed: false,
-  //   features: geocodage.results.olFeatures,
-  //   // target: document.body
-  // });
-  //console.log(listCtrl);
-  //listCtrl.enableSort('nom', 'region', 'mag')
-  //carte.getMap().addControl (listCtrl);
-  //listCtrl.setColumns(["_score"]);
-  // listCtrl.on('select', function(e) {
-  //   selecti.getFeatures().clear();
-  //   selecti.getFeatures().push(e.feature);
-  //   showInfo(e.feature)
-  // });
-  // listCtrl.on('dblclick', function(e) {
-  //   map.getView().fit(e.feature.getGeometry().getExtent())
-  //   map.getView().setZoom(carte.getView().getZoom() - 1)
-  // })
 
   setList();
 

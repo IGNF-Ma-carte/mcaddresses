@@ -3,13 +3,13 @@ import { setGeocodePatience, geocodePatience } from "./loader";
 import { geocodage, getAlternatives, getBestScoreIndex } from "./geocode";
 import formatAddress from "./formatAddress";
 import carte, {getFeatureLayer, getTempFeatureLayer} from "../carte";
-import { updateListAddress } from "../liste_adresses/listUpdate";
 import { selectAddressListAction } from "../liste_adresses/selectAddress";
 import { unselectAction } from "../interactions/unselectInteraction";
 import { uniqueAltiGeocod } from "./alticodage";
 import { parseResults } from "../import/selectFile";
 import { createFeat } from "./features";
 import dialog from "mcutils/dialog/dialog";
+import { listCtrl } from "../liste_adresses/setList";
 
 
 /**
@@ -208,9 +208,10 @@ const endUnitaryGeocodAction = function(item, data, ind) {
     feat.set("alternatives", alternativeFeatArray);
     if(geocodage.results.olFeatures[ind]) {
       feat.set("originalIndex",geocodage.results.olFeatures[ind].get("originalIndex"));
+      feat.set("#", geocodage.results.olFeatures[ind].get("#"));
     }
-    else {
-      feat.set("originalIndex",geocodage.results.olFeatures.length + geocodage.removedIndex.length);
+    else {;
+      feat.set("originalIndex",geocodage.results.olFeatures.length);
     }
     
     carte.getInteraction("select").getFeatures().clear();
@@ -231,15 +232,11 @@ const endUnitaryGeocodAction = function(item, data, ind) {
     
     if(feat.getGeometry()) {
       getFeatureLayer().getSource().addFeature(geocodage.results.olFeatures[ind]);
-      updateListAddress(updateType);
       carte.getInteraction("select").getFeatures().push(geocodage.results.olFeatures[ind]);
       unselectAction();
-      selectAddressListAction(ind);
     }
     else {
-      updateListAddress(updateType);
       unselectAction();
-      selectAddressListAction(ind);
     }
     
     if(geocodage.altitude) {
@@ -248,6 +245,8 @@ const endUnitaryGeocodAction = function(item, data, ind) {
     else {
       dialog.close();
     }
+    listCtrl.setColumns(listCtrl.getColumns());
+    selectAddressListAction(ind);
     };
 
     export {unitaryGeocode, unitaryGeocodeAgain};

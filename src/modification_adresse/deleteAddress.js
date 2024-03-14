@@ -1,8 +1,10 @@
 import dialog from "mcutils/dialog/dialog";
-import { updateListAddress } from "../liste_adresses/listUpdate";
 import { getTempFeatureLayer, getFeatureLayer } from "../carte";
 import { unselectAction } from "../interactions/unselectInteraction";
 import { getSelectedFeature } from "../interactions/selectInteraction";
+import { listCtrl } from "../liste_adresses/setList";
+import { geocodage } from "../geocodage/geocode";
+import { parseResults } from "../import/selectFile";
 
 /**
  * Suppression d'une adresse
@@ -15,13 +17,20 @@ import { getSelectedFeature } from "../interactions/selectInteraction";
                             onButton: (click) => {
                                 switch (click){
                                     case 'submit':
-                                        updateListAddress("remove", getSelectedFeature());
+                                        let index = geocodage.getFeatureIndex(getSelectedFeature());
+                                        parseResults.data.splice(index, 1);
+                                        geocodage.results.olFeatures.splice(index, 1);
+                                        geocodage.results.apiFeatures.splice(index, 1);
+                                        for(let i=index; i<geocodage.results.olFeatures.length; i++) {
+                                            geocodage.results.olFeatures[i].set("#", i+1, true);
+                                        }
                                         getTempFeatureLayer().getSource().clear();
                                         if(getSelectedFeature().getGeometry()) {
                                             getFeatureLayer().getSource().removeFeature(getSelectedFeature());
                                         }
                                         carte.getInteraction("select").getFeatures().clear();
                                         unselectAction();
+                                        listCtrl.setColumns(listCtrl.getColumns());
                                         dialog.close();
                                         break;
                                     case 'cancel':

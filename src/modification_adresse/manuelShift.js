@@ -1,12 +1,14 @@
 import { getSelectedFeature, selectAddressAction } from "../interactions/selectInteraction";
 import { updatePanelView } from "./address_fct";
 import { geocodage } from "../geocodage/geocode";
-import { updateListAddress } from "../liste_adresses/listUpdate";
 import dialog from "mcutils/dialog/dialog";
 import { uniqueAltiGeocod } from "../geocodage/alticodage";
 import { uniqueReverseGeocode, timer } from "../geocodage/reverseGeocode";
 import Modify from 'ol/interaction/Modify';
 import carte from "../carte";
+import { setPropertiesForList } from "../geocodage/features";
+import { listCtrl } from "../liste_adresses/setList";
+import { getAddressLabelFromFeat } from "../geocodage/features";
 
 var originalCoord;
 var modifyInteraction;
@@ -45,6 +47,7 @@ const manualShiftValidation = function(validationCallback) {
                 }
                 
                 f.set("properties", {});
+                
                 if(reverseGeocodeData) {
                     for(var i in reverseGeocodeData) {
                         f.get("properties")[i] = reverseGeocodeData[i];
@@ -55,9 +58,17 @@ const manualShiftValidation = function(validationCallback) {
                 if(alti) {
                     f.get("properties").altitude = alti;
                 }
+                f.get("properties").geocodedAddress = getAddressLabelFromFeat(f);
+
                 f.setIgnStyle("pointColor", "lightgrey");
                 f.setIgnStyle("symbolColor", "lightgrey");
-                updateListAddress("modify");
+                let index = f.get("#");
+
+                f = setPropertiesForList(f);
+                f.set("#", index);
+
+                listCtrl.setColumns(listCtrl.getColumns());
+
                 carte.getInteraction("select").setActive(true);
                 carte.getMap().removeInteraction(modifyInteraction);
                 updatePanelView("info");

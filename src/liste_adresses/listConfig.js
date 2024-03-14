@@ -1,25 +1,47 @@
-import { listHeaderShow, listSelectedIndex, listHeader } from "./createList";
 import dialog from "mcutils/dialog/dialog";
-import { createList } from "./createList";
+import { listCtrl } from "./setList";
 
 /**
- * Action lors d'un clic sur le bouton de configuration de la liste
+ * Initialisation du bouton de paramétrage de la liste d'adresses
  */
-const setConfigButtonsEvent = function() {
-    document.getElementById("list_config").addEventListener("click", () => {
-        dialog.show({ content: getHtmlListConfig(), className: 'list_config_dlg', title: "Configuration de la liste de géocodage",
+const setButtonConfig = function() {
+    //Initialisation des attributs utilisés pour gérer l'affichage
+    listCtrl.set("all_columns", listCtrl.getColumns());
+    listCtrl.set("hidden_columns", []);
+    //création du bouton et ajout dans le header de la liste
+    let header = document.querySelector(".ol-feature-list .ol-header p");
+    let button = document.createElement("i");
+    button.classList.add("fi-configuration");
+    button.id = "list_config";
+    button.title = "Affichage des colonnes";
+    header.append(button);
+    //Event listener du bouton de paramétrage
+    button.addEventListener("click", configButtonEvent);
+};
+
+/**
+ * Action du bouton de paramétrage de la liste d'adresses
+ */
+const configButtonEvent = function() {
+    //affichage du dialogue
+    dialog.show({ content: getHtmlListConfig(), className: 'list_config_dlg', title: "Configuration de la liste de géocodage",
                     buttons: {submit : 'Valider', cancel: 'Annuler'},
                             onButton: (click) => {
                                 switch (click){
                                     case 'submit':
-                                        for(var i in listHeaderShow) {
-                                            listHeaderShow[i] = document.getElementById("cb" + i).checked;
+                                        //maj des attributs utilisés pour gérer l'affichage
+                                        let hidden_columns = [];
+                                        let shown_columns = [];
+                                        for(var i in listCtrl.get("all_columns")) {
+                                            if(!document.getElementById("cb" + i).checked) {
+                                                hidden_columns.push(listCtrl.get("all_columns")[i])
+                                            } else {
+                                                shown_columns.push(listCtrl.get("all_columns")[i])
+                                            }
                                         }
-                                        createList();
-                                        if(listSelectedIndex > -1) {
-                                            document.getElementById("address" + listSelectedIndex).classList.toggle("selected");
-                                            document.getElementById("address" + listSelectedIndex).scrollIntoView({ behavior: "smooth", block: "center" });
-                                        }
+                                        //maj de l'affichage de la liste
+                                        listCtrl.set("hidden_columns", hidden_columns);
+                                        listCtrl.setColumns(shown_columns);
                                         dialog.close();
                                         break;
                                     case 'cancel':
@@ -28,7 +50,6 @@ const setConfigButtonsEvent = function() {
                                 }
                             }
          });
-    });
 };
 
 /**
@@ -38,15 +59,15 @@ const setConfigButtonsEvent = function() {
  const getHtmlListConfig = function() {
     var html = "<p>Afin de faciliter l'utilisation de la liste de géocodage vous pouvez masquer des colonnes.</p><table>"
     var checked;
-    for(var i in listHeader) {
-        checked = "";
-        if(listHeaderShow[i]) {
-            checked = "checked";
+    for(var i in listCtrl.get("all_columns")) {
+        checked = "checked";
+        if(listCtrl.get("hidden_columns").includes(listCtrl.get("all_columns")[i])) {
+            checked = "";
         }
         if(i%4 == 0) {
             html += "<tr>";
         }
-        html += "<td><label class='ol-ext-check ol-ext-checkbox' for='cb" + i + "'><input type='checkbox' " + checked + " id='cb" + i + "' /><span></span>" + listHeader[i] + "</label></td>";
+        html += "<td><label class='ol-ext-check ol-ext-checkbox' for='cb" + i + "'><input type='checkbox' " + checked + " id='cb" + i + "' /><span></span>" + listCtrl.get("all_columns")[i] + "</label></td>";
         if((i+1)%4 == 0) {
             html += "</tr>";
         }
@@ -55,4 +76,4 @@ const setConfigButtonsEvent = function() {
     return html;
 };
 
-export {setConfigButtonsEvent};
+export {setButtonConfig};
