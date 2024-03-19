@@ -45,8 +45,8 @@ carte.getInteraction("select").on("select", function () {
 const selectAddressAction = function (f) {
     updatePanelView("info");
 
-    var score = f.get("properties")._score;
-    var qualite = f.get("properties").quality;
+    var score = f._api_properties._score;
+    var qualite = f._api_properties.quality;
     var colorClass = getColorClass(score);
 
     var colorClassArray = ["green", "yellow", "orange", "grey", "white"];
@@ -84,20 +84,20 @@ const selectAddressAction = function (f) {
 
     var adr;
     if (parseResults.columnCorrespondance["[Adresse complète]"]) {
-        adr = f.get("data")[parseResults.header[parseResults.columnCorrespondance["[Adresse complète]"] - 1]];
+        adr = f._data[parseResults.header[parseResults.columnCorrespondance["[Adresse complète]"] - 1]];
     }
     else if (parseResults.columnCorrespondance["[Parcelle]"]) {
-        adr = f.get("data")[parseResults.header[parseResults.columnCorrespondance["[Parcelle]"] - 1]];
+        adr = f._data[parseResults.header[parseResults.columnCorrespondance["[Parcelle]"] - 1]];
     }
     else {
-        adr = f.get("data")[parseResults.header[parseResults.columnCorrespondance["[Rue]"] - 1]] + "</br>";
-        adr += f.get("data")[parseResults.header[parseResults.columnCorrespondance["[Code postal]"] - 1]];
-        adr += " " + f.get("data")[parseResults.header[parseResults.columnCorrespondance["[Commune]"] - 1]];
+        adr = f._data[parseResults.header[parseResults.columnCorrespondance["[Rue]"] - 1]] + "</br>";
+        adr += f._data[parseResults.header[parseResults.columnCorrespondance["[Code postal]"] - 1]];
+        adr += " " + f._data[parseResults.header[parseResults.columnCorrespondance["[Commune]"] - 1]];
     }
 
     document.getElementById("file_address").innerHTML = adr;
 
-    if (f.get("alternatives").length) {
+    if (f._api_properties.alternatives.length) {
         if (document.getElementById("alternatives_link").classList.contains("hidden")) {
             document.getElementById("alternatives_help").classList.toggle("hidden");
             document.getElementById("alternatives_link").classList.toggle("hidden");
