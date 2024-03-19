@@ -2,10 +2,8 @@ import dialog from "mcutils/dialog/dialog";
 import { exportDialog } from "../export/export";
 import carte, { getFeatureLayer, getTempFeatureLayer } from "../carte";
 import { clearGeocodage } from "../geocodage/geocode";
-import { setListSelectedIndex } from "../liste_adresses/createList";
 import { actionWindow, clearParseResults, clearImportedFile } from "./selectFile";
-import { setListHeader, setListHeaderShow } from "../liste_adresses/createList";
-
+import { clearListCtrl } from "../liste_adresses/setList";
 import import_geocod_html from '../../pages/import_geocod-page.html'
 
 /**
@@ -32,7 +30,6 @@ const newFileImportDialog = function () {
             }
         }
     });
-    document.getElementsByClassName("ol-buttons")[0].querySelector("input").type = "submit";
 };
 
 /**
@@ -43,16 +40,9 @@ const doNewImport = function () {
     getTempFeatureLayer().getSource().clear();
   
     clearGeocodage();
-    setListSelectedIndex(-1);
     clearParseResults();
     clearImportedFile();
-  
-    document.getElementById("address_list").innerHTML = "";
-    for (var i in document.body.classList) {
-        if (document.body.classList[i] && typeof document.body.classList[i] == "string") {
-            document.body.classList.toggle(document.body.classList[i]);
-        }
-    }
+    clearListCtrl();
   
     carte.getInteraction("select").setActive(true);
   
@@ -68,8 +58,6 @@ const doNewImport = function () {
     document.getElementById("action_div").innerHTML = import_geocod_html;
     document.getElementById("action_div").classList.toggle("import");
     document.getElementById("action_div").classList.toggle("preview");
-    setListHeader(undefined);
-    setListHeaderShow([]);
     actionWindow();
 };
 

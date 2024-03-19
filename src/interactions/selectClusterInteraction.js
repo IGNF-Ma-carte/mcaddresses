@@ -20,15 +20,15 @@ import { geocodage } from "../geocodage/geocode";
         var f = fArray[i];
         var cellContent = "";
         if (parseResults.columnCorrespondance["[Nom]"]) {
-            cellContent += "<p class='cell_title'>" + f.get("data")[parseResults.header[parseResults.columnCorrespondance["[Nom]"] - 1]] + "</p>";
+            cellContent += "<p class='cell_title'>" + f._data[parseResults.header[parseResults.columnCorrespondance["[Nom]"] - 1]] + "</p>";
         }
         else {
             cellContent += "<p class='cell_title'>Adresse " + (Number(i) + 1) + "</p>";
         }
         var adressLabel = getAddressLabelFromFeat(f, true);
         cellContent += "<p>" + adressLabel[0] + "</br>" + adressLabel[1] + "</p>";
-        var colorClass = getColorClass(f.get("properties")._score);
-        cellContent += "<span class='" + colorClass + "'>" + Math.round(f.get("properties")._score * 100) / 100 + "</span>";
+        var colorClass = getColorClass(f._api_properties._score);
+        cellContent += "<span class='" + colorClass + "'>" + Math.round(f._api_properties._score * 100) / 100 + "</span>";
         html += "<tr id='" + i.toString() + "'><td>" + cellContent + "</td><tr>";
     }
     html += "</table>";

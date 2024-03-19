@@ -13,22 +13,11 @@ div[data-role='toolBar'] .fi-new{
 
 div[data-role='map'] {
   left: 0;
+  /* bottom: 12em; */
 }
 
 body.left_panel div[data-role='map'] {
   left: 20em;
-}
-
-body.list div[data-role='map'] {
-  bottom: 16em;
-}
-
-body.expanded_list div[data-role='map'] {
-  bottom: calc(50vh + 5em);
-}
-
-body.reduced_list div[data-role='map'] {
-  bottom: 5em;
 }
 
 div[data-role='toolBar'] i:hover {
@@ -425,177 +414,65 @@ background-color: #E9ECEF;
   margin-top: 1em;
 }
 
+
 /*****liste d'adresses*****/
 
 #address_list {
-  display: none;
+  position: fixed;
   width: 100%;
-  height: 11em;
   z-index: 1;
   background-color: #F4F6F8;
-  position: absolute;
-  bottom: 5em;
+  bottom: 0;
 }
 
-body.list #address_list {
-  display: block;
+.ol-feature-list {
+  font-size: 13px;
 }
 
-#address_list .fi-minus::before {
-  content: "\e904";
-}
-
-body.reduced_list #address_list .fi-minus::before {
-  content: "\e903";
-}
-
-body.reduced_list #address_list #expand_or_compress_button, body.reduced_list #address_list #scroll_list_div{
-  display: none;
-}
-
-#address_list .fi-maximize::before {
-  content: "\ea45";
-  
-}
-
-body.expanded_list #address_list .fi-maximize::before {
-  content:"\ea46";
-}
-
-body.expanded_list #address_list {
-  height: 50vh;
-}
-
-body.reduced_list #address_list {
-  height: 2.5em;
-  bottom: 2.5em;
-}
-
-#address_list #scroll_list_div {
-  overflow: auto;
-  height: 11em;
-}
-
-body.expanded_list #address_list #scroll_list_div{
-  height: 50vh;
-}
-
-#list_title {
-  position: relative;
-}
-
-#list_title span{
-  height: 2.5em;
-  line-height: 2.5em;
-  vertical-align: middle;
+.ol-feature-list .ol-header p {
   font-size: 15px;
-  font-weight: bold;
-  margin-left: 1.5em;
 }
 
-#list_title i:hover {
-  background-color: lightgray;
-  cursor: pointer;
-}
-
-#list_title .fi-minus, #list_title .fi-plus, #list_title .fi-maximize, #list_title .fi-configuration{
-  position: relative;
-  float: right;
-  margin-right: 1em ;
-  top: 0.8em;
-}
-
-#list_title .fi-maximize{
-  position: relative;
-  float: right;
-  margin-right: 1em;
-  top: 0.8em;
-}
-
-#address_list table {
-  border-collapse: collapse;
-  white-space: nowrap;
-}
-
-#address_list thead {
-  position: sticky;
-  top: 0;
-  background-color: #F4F6F8;
-}
-
-#address_list th {
-  text-align: center;
-  padding: 0.5em;
-  box-shadow: inset 1px 1px #DDE1E6, 0 1px #DDE1E6;
-}
-
-#address_list .sortable:hover{
-  cursor: pointer;
-  background-color: #B8BCC1;
-}
-
-#index_list_header i.fi, #score_list_header i.fi{
-  display: none;
-}
-
-#index_list_header.descending i.fi, #score_list_header.descending i.fi, #index_list_header.ascending i.fi, #score_list_header.ascending i.fi{
-  display: inline;
-  font-size: 10px;
-  margin-left: 0.8em;
-}
-
-#index_list_header i.fa, #score_list_header i.fa {
-  margin-left: 0.8em;
-}
-
-#index_list_header.descending i.fi::before {
-  content: "\ea44";
-}
-
-#index_list_header.ascending i.fi::before {
-  content: "\ea43";
-}
-
-#score_list_header.descending i.fi::before {
-  content: "\ea44";
-}
-
-#score_list_header.ascending i.fi::before {
-  content: "\ea43";
-}
-
-#address_list tr {
-  background-color: white;
-}
-
-#address_list thead tr {
-  background-color: #F4F6F8;
-}
-
-#address_list td.lightgrey {
-  background-color: #F4F6F8;
-  text-align: center;
+.ol-feature-list .ol-header p, .ol-feature-list table thead p {
   font-weight: bold;
 }
 
-#address_list tr td span {
+.ol-feature-list table td[data-prop='#'] {
+  text-align: center!important;
+  font-weight: bold;
+}
+
+.ol-feature-list table td[data-prop='Score'] {
+  text-align: center!important;
+}
+
+.ol-feature-list table td[data-prop='Score'] span{
   display: inline-block;
-  text-align: center;
   min-width: 2.5em;
   border-radius: 2px;
 }
 
-#address_list tbody tr:hover {
-  background-color: #F4F6F8;
-}
-
-#address_list tbody td {
+.ol-feature-list tbody td {
   box-shadow: inset 1px 1px #DDE1E6, 0 1px #DDE1E6;
   padding: 0.5em;
 }
 
-#address_list .selected, #address_list .selected:hover {
-  background-color: #E1EEFD;
+.ol-feature-list thead td {
+  text-align: center;
+  padding: 0.5em;
+  box-shadow: inset 1px 1px #DDE1E6, 0 1px #DDE1E6;
+}
+
+.ol-feature-list .ol-header .fi-configuration:hover {
+  background-color: lightgray;
+  cursor: pointer;
+}
+
+.ol-feature-list .ol-header .fi-configuration{
+  position: relative;
+  float: right;
+  margin-right: 1em ;
+  top: 0.3em;
 }
 
 .hidden {

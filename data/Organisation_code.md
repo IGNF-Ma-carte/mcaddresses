@@ -52,11 +52,8 @@ Dans le dossier "src/geocodage" :
 - ***report.js*** : contient toutes les fonctions pour la création du rapport affiché à la fin d'un géocodage.
 
 Dans le dossier "src/liste_adresses" : 
-- ***createList.js*** : contient les fonctions la création de la liste des adresses géocodées affichée après un géocodage.
-- ***listUpdate.js*** : contient les fonctions la mise à jour de la liste.
-- ***resizeList.js*** : contient les fonctions pour les boutons permettant de masquer et agrandir/diminuer la liste.
-- ***configList.js*** : contient les fonctions pour la configuration des champs affichés dans la liste.
-- ***sortList.js*** : contient les fonctions pour trier la liste.
+- ***setList.js*** : contient les fonctions pour la création de la liste des adresses géocodées affichée après un géocodage.
+- ***listConfig.js*** : contient les fonctions pour le bouton de paramétrage des champs affichés dans la liste.
 - ***selectAddress.js*** : contient les fonctions utilisées lors de la sélection d'une adresse dans la liste.
 
 Dans le dossier "src/interactions" : 

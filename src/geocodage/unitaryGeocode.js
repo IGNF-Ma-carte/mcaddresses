@@ -3,13 +3,13 @@ import { setGeocodePatience, geocodePatience } from "./loader";
 import { geocodage, getAlternatives, getBestScoreIndex } from "./geocode";
 import formatAddress from "./formatAddress";
 import carte, {getFeatureLayer, getTempFeatureLayer} from "../carte";
-import { updateListAddress } from "../liste_adresses/listUpdate";
-import { selectAddressListAction } from "../liste_adresses/selectAddress";
+import { selectAddressListAction } from "../liste_adresses/setList";
 import { unselectAction } from "../interactions/unselectInteraction";
 import { uniqueAltiGeocod } from "./alticodage";
 import { parseResults } from "../import/selectFile";
 import { createFeat } from "./features";
 import dialog from "mcutils/dialog/dialog";
+import { listCtrl } from "../liste_adresses/setList";
 
 
 /**
@@ -202,15 +202,12 @@ import dialog from "mcutils/dialog/dialog";
 const endUnitaryGeocodAction = function(item, data, ind) {
     var feat = createFeat(item, data);
     var alternativeFeatArray = [];
-    for(var i in feat.get("alternatives")) {
-      alternativeFeatArray.push(createFeat(feat.get("alternatives")[i], data));
+    for(var i in feat._api_properties.alternatives) {
+      alternativeFeatArray.push(createFeat(feat._api_properties.alternatives[i], data));
     }
-    feat.set("alternatives", alternativeFeatArray);
+    feat._api_properties.alternatives = alternativeFeatArray;
     if(geocodage.results.olFeatures[ind]) {
-      feat.set("originalIndex",geocodage.results.olFeatures[ind].get("originalIndex"));
-    }
-    else {
-      feat.set("originalIndex",geocodage.results.olFeatures.length + geocodage.removedIndex.length);
+      feat.set("#", geocodage.results.olFeatures[ind].get("#"));
     }
     
     carte.getInteraction("select").getFeatures().clear();
@@ -231,15 +228,11 @@ const endUnitaryGeocodAction = function(item, data, ind) {
     
     if(feat.getGeometry()) {
       getFeatureLayer().getSource().addFeature(geocodage.results.olFeatures[ind]);
-      updateListAddress(updateType);
       carte.getInteraction("select").getFeatures().push(geocodage.results.olFeatures[ind]);
       unselectAction();
-      selectAddressListAction(ind);
     }
     else {
-      updateListAddress(updateType);
       unselectAction();
-      selectAddressListAction(ind);
     }
     
     if(geocodage.altitude) {
@@ -248,6 +241,8 @@ const endUnitaryGeocodAction = function(item, data, ind) {
     else {
       dialog.close();
     }
+    listCtrl.setColumns(listCtrl.getColumns());
+    selectAddressListAction(feat);
     };
 
     export {unitaryGeocode, unitaryGeocodeAgain};

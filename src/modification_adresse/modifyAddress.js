@@ -55,14 +55,14 @@ const modifyFeature = function() {
     
     for(let i=0; i<requiredIndex.length; i++) {
         var val = document.getElementById("input" + i.toString()).value;
-        getSelectedFeature().get("data")[parseResults.header[requiredIndex[i]-1]] = val;
+        getSelectedFeature()._data[parseResults.header[requiredIndex[i]-1]] = val;
     }
 
     var data = [];
     var feat = getSelectedFeature();
     for(var i in parseResults.header)
     {   
-        data.push(feat.get("data")[parseResults.header[i]]);
+        data.push(feat._data[parseResults.header[i]]);
     }
     unitaryGeocode([data], geocodage.getFeatureIndex(feat));
 };

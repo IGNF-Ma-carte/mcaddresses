@@ -27,7 +27,6 @@ const uniqueReverseGeocode = function(feature, callback) {
     })
     .then(function(res) {
       if(res && res.features && res.features.length) {
-        // callback(res.features[0].properties);
         callback(formatAddress(res.features[0]));
       }
       else {
