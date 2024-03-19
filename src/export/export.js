@@ -8,13 +8,10 @@ import { connectDialog } from 'mcutils/charte/macarte'
 import * as XLSX from 'xlsx/xlsx.mjs';
 import carte, { getFeatureLayer } from '../carte';
 import GeoJSON from 'ol/format/GeoJSON';
-
 import {transformExtent} from 'ol/proj'
-
 import api from 'mcutils/api/api';
 import {getEditorURL} from 'mcutils/api/serviceURL';
 import saveCarte from 'mcutils/dialog/saveCarte';
-
 import options from 'mcutils/config/config';
 import setAlerte from '../unload';
 
@@ -82,28 +79,28 @@ const getXlsxExportData = function() {
         var f = geocodage.results.olFeatures[j];
         var d = [];
 
-        d.push(f.get("properties")._score);
+        d.push(f._api_properties._score);
 
-        if(f.get("properties")._score == 0) {
+        if(f._api_properties._score == 0) {
             d.push("");    
             d.push("");    
         }
         else {
-            d.push(f.get("properties").quality);
+            d.push(f._api_properties.quality);
             d.push(getAddressLabelFromFeat(f));    
         }
 
         if(geocodage.altitude) {
-            d.push(f.get("properties").altitude);
+            d.push(f._api_properties.altitude);
         }
 
         for(var k in parseResults.header) {
-            d.push(f.get("data")[parseResults.header[k]]);
+            d.push(f._data[parseResults.header[k]]);
         }
 
-        if(f.get("properties").inseeCode)
+        if(f._api_properties.inseeCode)
         {
-            d.push(f.get("properties").inseeCode);
+            d.push(f._api_properties.inseeCode);
         }
         else {
             d.push("");
@@ -134,41 +131,43 @@ const getExportData = function() {
     var data = [];
 
     for(var i in geocodage.results.olFeatures) {
-        data.push(getFeatureExportData(geocodage.results.olFeatures[i].getProperties()));
+        data.push(getFeatureExportData(geocodage.results.olFeatures[i]));
     }
 
     return data;
 };
 
-const getFeatureExportData = function(attr) {
-    var featData = {"score": attr.properties._score};
+const getFeatureExportData = function(feat) {
+    let prop = feat._api_properties;
+    let data = feat._data;
+    var featData = {"score": prop._score};
 
-    if(attr.properties._score==0) {
+    if(prop._score==0) {
         featData["qualité"] = "";
         featData["adresse géocodée"] = "";
     }
     else {
-        featData["qualité"] = attr.properties.quality;
-        featData["adresse géocodée"] = attr.properties.geocodedAddress;
+        featData["qualité"] = prop.quality;
+        featData["adresse géocodée"] = prop.geocodedAddress;
     }
     if(geocodage.altitude)
     {
-        featData["altitude"] = attr.properties.altitude;
+        featData["altitude"] = prop.altitude;
     }
 
-    for(var j in attr.data) {
-        featData[j] = attr.data[j];
+    for(var j in data) {
+        featData[j] = data[j];
     }
 
-    if(attr.properties.inseeCode)
+    if(prop.inseeCode)
     {
-        featData["code INSEE"] = attr.properties.inseeCode;
+        featData["code INSEE"] = prop.inseeCode;
     }
     else {
         featData["code INSEE"] = "";
     }
-    if(attr.geometry) {
-        var coord = attr.geometry.getCoordinates();
+    if(feat.getGeometry()) {
+        var coord = feat.getGeometry().getCoordinates();
         var lonlat = toLonLat(coord);
         featData["longitude"] = lonlat[0];
         featData["latitude"] = lonlat[1];
@@ -280,29 +279,10 @@ const getKmlExportLink = function() {
  * Crée le lien pour l'export geojson
  */
 const getGeojsonExportLink = function() {
-    var format = new GeoJSON();
+    var format = new GeoJSON({"dataProjection": "EPSG:4326", "featureProjection": "EPSG:3857"});
     var features = getFeatureLayer().getSource().getFeatures();
-    var clonedFeatures = [];
-    for(var i in features) {
-        var f = features[i].clone();
 
-        var d = getFeatureExportData(f.getProperties());
-
-        for(var j in d) {
-            f.set(j, d[j]);
-        }
-
-        var geom = f.getGeometry().transform('EPSG:3857', 'EPSG:4326');
-        f.setGeometry(geom);
-
-        f.unset("alternatives");
-        f.unset("properties");
-        f.unset("data");
-        f.unset("originalIndex");
-
-        clonedFeatures.push(f);
-    }
-    var obj = format.writeFeatures(clonedFeatures);
+    var obj = format.writeFeatures(features);
     var blob = new Blob([obj], {type: 'text/plain;charset=utf8'});
 
     if (exportFile !== null) {
@@ -408,15 +388,7 @@ const switchToMaCarte = function() {
 
     saveCarte(opt, mapOpt => {
         // Write uncompress
-        const data = carte.write(true)
-        // Convert properties
-        data.layers[data.layers.length - 1].features.forEach(f => {
-            var d = getFeatureExportData(f.attributes)
-            var lonlat = toLonLat(f.coords);
-            d.longitude = lonlat[0];
-            d.latitude = lonlat[1];
-            f.attributes = d;
-        });
+        const data = carte.write()
         const postMap = function() {
             dialog.showWait('Enregistrement en cours...')
             api.postMap(mapOpt, data, (e) => {

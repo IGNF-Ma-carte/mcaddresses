@@ -128,7 +128,7 @@ const getColorClass = function(score) {
         html += '<p><label class="input-placeholder isok focus" for="input0">';
         html += '<input type="text" class="input-placeholder" id="input0"';
         if(feat) {
-            html+= ' value="' + feat.get("data")[parseResults.header[parseResults.columnCorrespondance["[Nom]"]-1]] + '"';
+            html+= ' value="' + feat._data[parseResults.header[parseResults.columnCorrespondance["[Nom]"]-1]] + '"';
         }
         html += '><span>' + parseResults.header[parseResults.columnCorrespondance["[Nom]"]-1] + '</span></label></p>';
         adjust++;
@@ -146,7 +146,7 @@ const getColorClass = function(score) {
                 html += '<input type="text" class="input-placeholder" required id="input' + (count + adjust).toString() + '"';
 
                 if(feat) {
-                    html += ' value="' + feat.get("data")[parseResults.header[j]];
+                    html += ' value="' + feat._data[parseResults.header[j]];
                 }
 
                 html += '"><span>' + parseResults.header[j] + '</span></label></p>';
@@ -161,7 +161,7 @@ const getColorClass = function(score) {
         html += '<p><label class="input-placeholder isok focus" for="input' + (count+adjust).toString() + '">';
         html += '<input type="text" class="input-placeholder" id="input' + (count+adjust).toString() + '"';
         if(feat) {
-            html+= ' value="' + feat.get("data")[parseResults.header[parseResults.columnCorrespondance["[Département]"]-1]] + '"';
+            html+= ' value="' + feat._data[parseResults.header[parseResults.columnCorrespondance["[Département]"]-1]] + '"';
         }
         html += '><span>' + parseResults.header[parseResults.columnCorrespondance["[Département]"]-1] + '</span></label></p>';
     }

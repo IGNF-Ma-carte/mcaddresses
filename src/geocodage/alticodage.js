@@ -36,7 +36,7 @@ const altiGeocode = function()
      .then(function (res) {
        if(!res || !res.length) {
          for(let i = start; i<geocodage.altitudeArray.length; i++) {
-           geocodage.results.olFeatures[i].get("properties").altitude = "undefined";
+           geocodage.results.olFeatures[i]._api_properties.altitude = "undefined";
          }
          geocodage.altiCurrentPack++;
          if (geocodage.currentPack < requestListByPack.length && !stopGeocode) {
@@ -67,7 +67,7 @@ const altiGeocode = function()
        }
 
        for(let i = start; i<geocodage.altitudeArray.length; i++) {
-         geocodage.results.olFeatures[i].get("properties").altitude = geocodage.altitudeArray[i];
+         geocodage.results.olFeatures[i]._api_properties.altitude = geocodage.altitudeArray[i];
          geocodage.results.olFeatures[i].set("Altitude", geocodage.altitudeArray[i]);
        }
        geocodage.altiCurrentPack++;
@@ -119,7 +119,7 @@ const altiGeocode = function()
             alti = undefined;
           }
           geocodage.altitudeArray[geocodage.getFeatureIndex(feature)] = alti;
-          feature.get("properties").altitude = alti;
+          feature._api_properties.altitude = alti;
           feature.set("Altitude", alti);
           listCtrl.setColumns(listCtrl.getColumns());
           dialog.close();

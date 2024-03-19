@@ -12,14 +12,17 @@ import { isParcel } from "../modification_adresse/address_fct";
  const addFeat = function () {
     getFeatureLayer().activateCluster(false);
     for(var i = (geocodage.currentPack - 1) * geocodage.packLength; i < geocodage.results.apiFeatures.length; i++) {
+
       var feat = createFeat(geocodage.results.apiFeatures[i], parseResults.data[geocodage.results.olFeatures.length]);
+
       var alternativeFeatArray = [];
-      for(var j in feat.get("alternatives")) {
-        alternativeFeatArray.push(createFeat(feat.get("alternatives")[j], parseResults.data[geocodage.results.olFeatures.length]));
+      for(var j in feat._api_properties.alternatives) {
+        alternativeFeatArray.push(createFeat(feat._api_properties.alternatives[j], parseResults.data[geocodage.results.olFeatures.length]));
       }
-      feat.set("alternatives", alternativeFeatArray);
-      feat.set("originalIndex", geocodage.results.olFeatures.length);
+      feat._api_properties.alternatives = alternativeFeatArray;
+
       geocodage.results.olFeatures.push(feat);
+
       if(feat.getGeometry()) {
         getFeatureLayer().getSource().addFeature(feat);
       }
@@ -40,29 +43,28 @@ import { isParcel } from "../modification_adresse/address_fct";
         geometry: new Point(fromLonLat(item.coordinates))
       });
     }
-    feat.set("properties", {});
-  
+    feat._api_properties = {};
     for(let i in item) {
       if(i == "alternatives") {
-        feat.set("alternatives", item[i]);
+        feat._api_properties.alternatives = item[i];
       }
       else {
-        feat.get("properties")[i] = item[i];
-        feat.set(i, item[i]);
+        feat._api_properties[i] = item[i]
       }
     }
 
-    feat.get("properties").geocodedAddress = getAddressLabelFromFeat(feat);
+    feat._api_properties.geocodedAddress = getAddressLabelFromFeat(feat);
   
-    feat.set("data", {});
+    feat._data = {};
   
     var st = Object.assign({}, getFeatureLayer().getIgnStyle());
   
-    if(feat.get("properties")._score > 0.8) {
+
+    if(feat._api_properties._score > 0.8) {
       st.pointColor = colors.veryGood;
       feat.setIgnStyle(st);
     }
-    else if(feat.get("properties")._score > 0.5) {
+    else if(feat._api_properties._score > 0.5) {
       st.pointColor = colors.good;
       feat.setIgnStyle(st);
     }
@@ -72,7 +74,7 @@ import { isParcel } from "../modification_adresse/address_fct";
     }
   
     for(let i in parseResults.header) {
-      feat.get("data")[parseResults.header[i]] = data[i];
+      feat._data[parseResults.header[i]] = data[i];
     }
       //retourne la feature avec les attributs qui vont bien pour la création de la liste d'adresses
       return setPropertiesForList(feat);
@@ -84,7 +86,7 @@ import { isParcel } from "../modification_adresse/address_fct";
    * @returns 
    */
   const setPropertiesForList = function(feat) {
-    let prop = feat.get("properties");
+    let prop = feat._api_properties;
 
     feat.set("#", geocodage.results.olFeatures.length + 1);
 
@@ -94,12 +96,12 @@ import { isParcel } from "../modification_adresse/address_fct";
 
     feat.set("Adresse géocodée", prop.geocodedAddress);
 
-    if(feat.get("properties").altitude) {
-      feat.set("Altitude", feat.get("properties").altitude);
+    if(prop.altitude) {
+      feat.set("Altitude", prop.altitude);
     }
 
-    for(let i in feat.get("data")) {
-        feat.set(i, feat.get("data")[i]);
+    for(let i in feat._data) {
+        feat.set(i, feat._data[i]);
     }
 
     feat.set("Code INSEE",prop.inseeCode||"");
@@ -122,24 +124,25 @@ import { isParcel } from "../modification_adresse/address_fct";
  * @returns {string or array of string} l'adresse
  */
 const getAddressLabelFromFeat = function (f, separated) {
+  let prop = f._api_properties
   if (!f.getGeometry()) {
       return "Cette adresse n'a pas pu être géocodée";
   }
   if (!isParcel()) {
-      var n = f.get("properties").number ? f.get("properties").number + " " : "";
-      var s = f.get("properties").street ? f.get("properties").street + " " : "";
-      var p = f.get("properties").postalCode ? f.get("properties").postalCode + " " : "";
-      var c = f.get("properties").city ? f.get("properties").city : "";
-      var t = f.get("properties").toponyme ? f.get("properties").toponyme : "";
+      var n = f._api_properties.number ? f._api_properties.number + " " : "";
+      var s = f._api_properties.street ? f._api_properties.street + " " : "";
+      var p = f._api_properties.postalCode ? f._api_properties.postalCode + " " : "";
+      var c = f._api_properties.city ? f._api_properties.city : "";
+      var t = f._api_properties.toponyme ? f._api_properties.toponyme : "";
       if (separated) {
           return [n + s, p + c + t];
       }
       return n + s + p + c + t;
   }
   if (separated) {
-      return [f.get("properties").id, f.get("properties").city];
+      return [f._api_properties.id, f._api_properties.city];
   }
-  return f.get("properties").id + " " + f.get("properties").city;
+  return f._api_properties.id + " " + f._api_properties.city;
 };
 
   export {createFeat, addFeat, getAddressLabelFromFeat, setPropertiesForList};

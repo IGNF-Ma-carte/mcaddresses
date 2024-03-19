@@ -10,6 +10,7 @@ import { setPropertiesForList } from "../geocodage/features";
 import { listCtrl } from "../liste_adresses/setList";
 import { getAddressLabelFromFeat } from "../geocodage/features";
 
+var modifiedFeature;
 var originalCoord;
 var modifyInteraction;
 
@@ -27,39 +28,47 @@ const manualShiftValidation = function(validationCallback) {
         selectAddressAction(f);
     }
     else {
-        var originalAlti = getSelectedFeature().get("properties").altitude;
+        var originalAlti = getSelectedFeature()._api_properties.altitude;
         var cb = function() {
             var reverseCallback = function(reverseGeocodeData) {
                 clearTimeout(timer);
-                var alti = f.get("properties").altitude;
+                var alti = f._api_properties.altitude;
+                console.log(f._api_properties.alternatives);
                 var clone = f.clone();
+                clone._data = f._data;
+                clone._api_properties = f._api_properties;
+                clone._api_properties.alternatives = f._api_properties.alternatives;
                 var st = Object.assign({}, f.getIgnStyle());
                 clone.setIgnStyle(st);
-                if(f.get("alternatives").length) {
-                    f.get("alternatives").unshift(clone);
+                if(f._api_properties.alternatives.length) {
+                    f._api_properties.alternatives.unshift(clone);
                 }
                 else {
-                    f.set("alternatives", [clone]);
+                    f._api_properties.alternatives = [clone];
                 }
-                f.get("alternatives")[0].getGeometry().setCoordinates(originalCoord);
+                let alt = f._api_properties.alternatives;
+                f._api_properties.alternatives[0].getGeometry().setCoordinates(originalCoord);
                 if(geocodage.altitude) {
-                    f.get("alternatives")[0].get("properties").altitude = originalAlti;
+                    f._api_properties.alternatives[0]._api_properties.altitude = originalAlti;
                 }
                 
-                f.set("properties", {});
-                
+                f._api_properties = {};
+
+                f._api_properties.alternatives = alt;
+
                 if(reverseGeocodeData) {
                     for(var i in reverseGeocodeData) {
-                        f.get("properties")[i] = reverseGeocodeData[i];
+                        if(i != "alternatives") {
+                            f._api_properties[i] = reverseGeocodeData[i];
+                        }
                       }  
                 }
-                f.get("properties").quality = "Manuel";
-                f.get("properties")._score = 99;
+                f._api_properties.quality = "Manuel";
+                f._api_properties._score = 99;
                 if(alti) {
-                    f.get("properties").altitude = alti;
+                    f._api_properties.altitude = alti;
                 }
-                f.get("properties").geocodedAddress = getAddressLabelFromFeat(f);
-
+                f._api_properties.geocodedAddress = getAddressLabelFromFeat(f);
                 f.setIgnStyle("pointColor", "lightgrey");
                 f.setIgnStyle("symbolColor", "lightgrey");
                 let index = f.get("#");
@@ -72,6 +81,9 @@ const manualShiftValidation = function(validationCallback) {
                 carte.getInteraction("select").setActive(true);
                 carte.getMap().removeInteraction(modifyInteraction);
                 updatePanelView("info");
+                modifiedFeature = null;
+                originalCoord = null;
+                modifyInteraction = null;
                 selectAddressAction(f);
                 dialog.close();
             };
@@ -91,6 +103,7 @@ const manualShiftValidation = function(validationCallback) {
  * Déplacement manuel d'une feature
  */
 const manualShifting = function() {
+    modifiedFeature = getSelectedFeature();
     modifyInteraction = new Modify({features: carte.getInteraction("select").getFeatures()});
     carte.getMap().addInteraction(modifyInteraction);
     dialog.close();
@@ -99,4 +112,4 @@ const manualShifting = function() {
     originalCoord = getSelectedFeature().getGeometry().getCoordinates();
 };
 
-export {manualShiftValidation, manualShifting};
+export {manualShiftValidation, manualShifting, modifyInteraction, originalCoord, modifiedFeature};

@@ -3,7 +3,7 @@ import { exportDialog } from "../export/export";
 import carte, { getFeatureLayer, getTempFeatureLayer } from "../carte";
 import { clearGeocodage } from "../geocodage/geocode";
 import { actionWindow, clearParseResults, clearImportedFile } from "./selectFile";
-
+import { clearListCtrl } from "../liste_adresses/setList";
 import import_geocod_html from '../../pages/import_geocod-page.html'
 
 /**
@@ -30,7 +30,6 @@ const newFileImportDialog = function () {
             }
         }
     });
-    document.getElementsByClassName("ol-buttons")[0].querySelector("input").type = "submit";
 };
 
 /**
@@ -43,13 +42,7 @@ const doNewImport = function () {
     clearGeocodage();
     clearParseResults();
     clearImportedFile();
-  
-    document.getElementById("address_list").innerHTML = "";
-    for (var i in document.body.classList) {
-        if (document.body.classList[i] && typeof document.body.classList[i] == "string") {
-            document.body.classList.toggle(document.body.classList[i]);
-        }
-    }
+    clearListCtrl();
   
     carte.getInteraction("select").setActive(true);
   

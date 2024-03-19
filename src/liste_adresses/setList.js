@@ -4,36 +4,46 @@ import FeatureList from "ol-ext/control/FeatureList"
 import { selectAddressAction } from "../interactions/selectInteraction";
 import { getTempFeatureLayer } from "../carte";
 import { setButtonConfig } from "./listConfig";
+import { modifyInteraction, modifiedFeature, originalCoord } from "../modification_adresse/manuelShift";
 
 /**
  * Création du FeatureList control
  */
-let listCtrl = new FeatureList({
-    title: 'Liste de géocodage',
-    collapsed: false,
-    target: document.getElementById("address_list")
-  });
+let listCtrl;
 
   /**
    * Paramétrage de la liste
    */
 let setList = function(){
+    if(!listCtrl) {
+        listCtrl = new FeatureList({
+            title: 'Liste de géocodage',
+            collapsed: false,
+            target: document.getElementById("address_list")
+        });
+
+        carte.getMap().addControl (listCtrl);
+        listCtrl.on("resize", onListResize);
+        document.querySelector(".ol-scroll-container").onscroll = function() {setScoreClass(); listCtrl.resize();};
+        listCtrl.on("select", function(e) {selectAddressListAction(e.feature)})
+    }
+
     //Features associées à la liste
     listCtrl.setFeatures(geocodage.results.olFeatures);
-    //ajout du control dans la carte
-    carte.getMap().addControl (listCtrl);
+    
     //ajout des colonnes
     listCtrl.setColumns(getColumns());
+
     //Tri sur les colonnes adéquats
     listCtrl.enableSort('#', 'Score');
+
+
     //Gestion du style des scores et affichage carte
     setScoreClass();
-    listCtrl.on("resize", onListResize);
-    document.querySelector(".ol-scroll-container").onscroll = function() {setScoreClass(); listCtrl.resize();};
-    //Action à la sélection
-    listCtrl.on("select", function(e) {selectAddressListAction(e.feature)})
+
     //initilisation du bouton de paramétrage de la liste
     setButtonConfig();
+
     let height = listCtrl.element.clientHeight;
     document.querySelector("div[data-role='map']").style.bottom = height + "px";
     
@@ -49,7 +59,7 @@ let getColumns = function() {
         columns.push("Altitude");
     }
 
-    for(let i in geocodage.results.olFeatures[0].get("data")) {
+    for(let i in geocodage.results.olFeatures[0]._data) {
         columns.push(i);
     }
 
@@ -65,26 +75,39 @@ let getColumns = function() {
 let setScoreClass = function() {
     let list = document.querySelector(".ol-feature-list table tbody");
     let score;
+    let scoreIndex = -1;
     for(let i in list.children) {
-        if(!list.children[i] || !list.children[i].children || !list.children[i].children[1]) {
+
+        if(!list.children[i] || !list.children[i].children || !list.children[i].children[0]) {
             continue;
         }
-        score = Number(list.children[i].children[1].innerText);
-        list.children[i].children[1].innerHTML = "<span>" + score + "</span>";
+
+        if(scoreIndex < 0) {
+            for(let j in list.children[i].children) {
+                if(list.children[i].children[j].attributes["data-prop"].value == "Score") {
+                    scoreIndex = j;
+                    break;
+                }
+            }
+        }
+
+        score = Number(list.children[i].children[scoreIndex].innerText);
+        list.children[i].children[scoreIndex].innerHTML = "<span>" + score + "</span>";
+        let elem = list.children[i].children[scoreIndex].children[0];
         if(score == 99) {
-            list.children[i].children[1].children[0].classList.add("white");
+            elem.classList.add("white");
         }
         else if(score > 0.8) {
-            list.children[i].children[1].children[0].classList.add("green");
+            elem.classList.add("green");
         }
         else if(score > 0.5) {
-            list.children[i].children[1].children[0].classList.add("yellow");
+            elem.classList.add("yellow");
         }
         else if(score > 0) {
-            list.children[i].children[1].children[0].classList.add("orange");
+            elem.classList.add("orange");
         }
         else if( score > -1) {
-            list.children[i].children[1].children[0].classList.add("grey");
+            elem.classList.add("grey");
         }
     }
 };
@@ -111,7 +134,12 @@ const selectAddressListAction = function(feat) {
         carte.getInteraction("select").getFeatures().clear();
         carte.getInteraction("select").getFeatures().push(feat);
     }
-
+    if(modifiedFeature) {
+        modifiedFeature.getGeometry().setCoordinates(originalCoord);
+        carte.getInteraction("select").setActive(true);
+        carte.getMap().removeInteraction(modifyInteraction);
+    }
+    
     selectAddressAction(feat);
 };
 
@@ -127,4 +155,13 @@ let onListResize = function() {
     setScoreClass();
 } 
 
-export {setList, listCtrl};
+/**
+ * Réinitialisation de la liste en cas de nouveau géocodage
+ */
+let clearListCtrl = function() {
+    listCtrl.setFeatures(geocodage.results.olFeatures);
+    let height = listCtrl.element.clientHeight;
+    document.querySelector("div[data-role='map']").style.bottom = height + "px";
+};
+
+export {setList, listCtrl, selectAddressListAction, clearListCtrl};

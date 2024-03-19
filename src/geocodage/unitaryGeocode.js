@@ -3,7 +3,7 @@ import { setGeocodePatience, geocodePatience } from "./loader";
 import { geocodage, getAlternatives, getBestScoreIndex } from "./geocode";
 import formatAddress from "./formatAddress";
 import carte, {getFeatureLayer, getTempFeatureLayer} from "../carte";
-import { selectAddressListAction } from "../liste_adresses/selectAddress";
+import { selectAddressListAction } from "../liste_adresses/setList";
 import { unselectAction } from "../interactions/unselectInteraction";
 import { uniqueAltiGeocod } from "./alticodage";
 import { parseResults } from "../import/selectFile";
@@ -202,16 +202,12 @@ import { listCtrl } from "../liste_adresses/setList";
 const endUnitaryGeocodAction = function(item, data, ind) {
     var feat = createFeat(item, data);
     var alternativeFeatArray = [];
-    for(var i in feat.get("alternatives")) {
-      alternativeFeatArray.push(createFeat(feat.get("alternatives")[i], data));
+    for(var i in feat._api_properties.alternatives) {
+      alternativeFeatArray.push(createFeat(feat._api_properties.alternatives[i], data));
     }
-    feat.set("alternatives", alternativeFeatArray);
+    feat._api_properties.alternatives = alternativeFeatArray;
     if(geocodage.results.olFeatures[ind]) {
-      feat.set("originalIndex",geocodage.results.olFeatures[ind].get("originalIndex"));
       feat.set("#", geocodage.results.olFeatures[ind].get("#"));
-    }
-    else {;
-      feat.set("originalIndex",geocodage.results.olFeatures.length);
     }
     
     carte.getInteraction("select").getFeatures().clear();
@@ -246,7 +242,7 @@ const endUnitaryGeocodAction = function(item, data, ind) {
       dialog.close();
     }
     listCtrl.setColumns(listCtrl.getColumns());
-    selectAddressListAction(ind);
+    selectAddressListAction(feat);
     };
 
     export {unitaryGeocode, unitaryGeocodeAgain};
