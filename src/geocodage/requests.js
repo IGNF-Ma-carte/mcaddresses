@@ -1,6 +1,7 @@
 import { geocodage } from "./geocode";
 import { parseResults } from "../import/selectFile";
 import { toLonLat } from 'ol/proj'
+import { boundingExtent } from 'ol/extent'
 
 var geocodLink = "https://data.geopf.fr/geocodage/";
 var altiGeocodLink = "https://data.geopf.fr/altimetrie/1.0/calcul/alti/rest/elevation.json?resource=ign_rge_alti_wld&delimiter=|&indent=false&measures=false&zonly=false";
@@ -92,7 +93,7 @@ const createAltiRequestListByPack = function() {
       }
       var r = geocodLink + "search?q=" + encodeURIComponent(address) + "&index=" + geocodingType;
 
-      if(geocodingType == "parcel") {
+      if(geocodingType == "parcel" && geocodage.trueGeometry) {
         r += "&returntruegeometry=true";
       }
 
@@ -113,8 +114,12 @@ const createAltiRequestListByPack = function() {
     for(var i in data) {
       lonlat = [0,0];
       if(data[i].getGeometry()) {
-        var coord = data[i].getGeometry().getCoordinates();
-        lonlat = toLonLat(coord); 
+        if(data[i].getGeometry().getType() == "Polygon") {
+          lonlat = toLonLat(data[i].getGeometry().getFlatInteriorPoint());
+        } else {
+          var coord = data[i].getGeometry().getCoordinates();
+          lonlat = toLonLat(coord); 
+        }
       }
       res.push(altiGeocodLink + "&lon=" + lonlat[0] + "&lat=" + lonlat[1]); 
     }
@@ -137,7 +142,8 @@ const createAltiRequestListByPack = function() {
     if(geocodage.type == "parcel") {
       type = "parcel";
     }
-    return geocodLink + 'reverse?index=' + type + '&searchgeom={"type":"Circle","coordinates":['+ lonlat[0] +',' + lonlat[1] + '],"radius":10}&returntruegeometry=false';
+    let trueGeom = geocodage.trueGeometry?true:false;
+    return geocodLink + 'reverse?index=' + type + '&searchgeom={"type":"Circle","coordinates":['+ lonlat[0] +',' + lonlat[1] + '],"radius":10}&returntruegeometry=' + trueGeom;
   };
   
   /**

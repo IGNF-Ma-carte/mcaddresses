@@ -86,8 +86,9 @@ const selectAddressAction = function (f) {
     if (parseResults.columnCorrespondance["[Adresse complète]"]) {
         adr = f._data[parseResults.header[parseResults.columnCorrespondance["[Adresse complète]"] - 1]];
     }
-    else if (parseResults.columnCorrespondance["[Parcelle]"]) {
-        adr = f._data[parseResults.header[parseResults.columnCorrespondance["[Parcelle]"] - 1]];
+    else if (parseResults.columnCorrespondance["[Numéro de parcelle]"]) {
+
+        adr = f._data[parseResults.header[parseResults.columnCorrespondance["[Numéro de parcelle]"] - 1]];
     }
     else {
         adr = f._data[parseResults.header[parseResults.columnCorrespondance["[Rue]"] - 1]] + "</br>";
@@ -110,8 +111,8 @@ const selectAddressAction = function (f) {
         }
     }
 
-    if ((!f.getGeometry() && !document.getElementById("manual_shifting").classList.contains("hidden")) ||
-        (f.getGeometry() && document.getElementById("manual_shifting").classList.contains("hidden"))) {
+    if (((!f.getGeometry() || f.getGeometry().getType() == "Polygon") && !document.getElementById("manual_shifting").classList.contains("hidden")) ||
+        (f.getGeometry() && f.getGeometry().getType() != "Polygon" && document.getElementById("manual_shifting").classList.contains("hidden"))) {
         document.getElementById("manual_shifting").classList.toggle("hidden");
     }
 

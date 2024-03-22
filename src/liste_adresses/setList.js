@@ -118,8 +118,15 @@ let setScoreClass = function() {
  */
 const selectAddressListAction = function(feat) {
     if(feat.getGeometry()) {
-        var coord = feat.getGeometry().getCoordinates();
-        carte.getMap().getView().setZoom(16);
+        let zoom = 16;
+        let coord;
+        if(feat.getGeometry().getType() == "Polygon") {
+            coord = feat.getGeometry().getCoordinates()[0][0];
+            zoom = 18;
+        } else {
+            coord = feat.getGeometry().getCoordinates();
+        }
+        carte.getMap().getView().setZoom(zoom);
         carte.getMap().getView().setCenter(coord);
         
         getTempFeatureLayer().getSource().clear();

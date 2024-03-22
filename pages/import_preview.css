@@ -119,6 +119,10 @@ height: 2.5em;
 max-width: 14em;
 }
 
+#trueGeometryCb {
+  margin-top: 0.5em;
+}
+
 #preview {
   overflow-x: auto;
   margin: 1em 5% 2em;

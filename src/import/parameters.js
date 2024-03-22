@@ -116,18 +116,27 @@ const setColumnSectionEvents = function () {
         resetColumnCorresp();
         setVisibilityColList("three_col_list");
         autoDetect("three_col");
+        if(!document.getElementById("trueGeometryCb").classList.contains("hidden")) {
+            document.getElementById("trueGeometryCb").classList.toggle("hidden");
+        }
     });
   
     document.getElementById("one_col").addEventListener("click", () => {
         resetColumnCorresp();
         setVisibilityColList("one_col_list");
         autoDetect("one_col");
+        if(!document.getElementById("trueGeometryCb").classList.contains("hidden")) {
+            document.getElementById("trueGeometryCb").classList.toggle("hidden");
+        }
     });
   
     document.getElementById("one_col_parcel").addEventListener("click", () => {
         resetColumnCorresp();
         setVisibilityColList("one_col_parcel_list");
         autoDetect("one_col_parcel");
+        if(document.getElementById("trueGeometryCb").classList.contains("hidden")) {
+            document.getElementById("trueGeometryCb").classList.toggle("hidden");
+        }
     });
     setSelectEvent();
 };

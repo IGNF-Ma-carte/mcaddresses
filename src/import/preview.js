@@ -64,11 +64,15 @@ const preview = function (csv) {
         if (parseResults.columnCorrespondance["[Numéro de parcelle]"]) {
             gType = "parcel";
         }
-    
+
         if (document.getElementById("altitude").checked) {
             geocodage.altitude = true;
         }
-    
+
+        if(document.getElementById("trueGeometry").checked) {
+            geocodage.trueGeometry = true;
+        }
+
         if(parseResults.endLine) {
             parseResults.data.splice(parseResults.endLine, parseResults.data.length -1);
         }

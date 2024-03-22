@@ -3,6 +3,7 @@ import { parseResults } from "../import/selectFile";
 import { getFeatureLayer } from "../carte";
 import Feature from 'ol/Feature';
 import Point from 'ol/geom/Point';
+import Polygon from 'ol/geom/Polygon';
 import { fromLonLat} from 'ol/proj';
 import colors from "../colors";
 import { isParcel } from "../modification_adresse/address_fct";
@@ -39,9 +40,21 @@ import { isParcel } from "../modification_adresse/address_fct";
   const createFeat = function(item, data) {
     var feat = new Feature({});
     if(item.coordinates) {
-      feat = new Feature({
-        geometry: new Point(fromLonLat(item.coordinates))
-      });
+      if(geocodage.type == "parcel" && geocodage.trueGeometry) {
+        let fromLonLatCoords = [];
+        for(let i in item.trueGeometry.coordinates) {
+          for(let j in item.trueGeometry.coordinates[i]) {
+            fromLonLatCoords.push(fromLonLat(item.trueGeometry.coordinates[i][j]));
+          }
+        } 
+        feat = new Feature({
+          geometry: new Polygon([fromLonLatCoords])
+        });
+      } else {
+        feat = new Feature({
+          geometry: new Point(fromLonLat(item.coordinates))
+        });
+      }
     }
     feat._api_properties = {};
     for(let i in item) {
@@ -58,20 +71,28 @@ import { isParcel } from "../modification_adresse/address_fct";
     feat._data = {};
   
     var st = Object.assign({}, getFeatureLayer().getIgnStyle());
+
+    if(geocodage.type == "parcel" && geocodage.trueGeometry) {
+      st = {};
+      //st.strokeColor = colors.veryGood;
+      feat.setIgnStyle(st);
+    } else {
+        if(feat._api_properties._score > 0.8) {
+          st.pointColor = colors.veryGood;
+          feat.setIgnStyle(st);
+        }
+        else if(feat._api_properties._score > 0.5) {
+          st.pointColor = colors.good;
+          feat.setIgnStyle(st);
+        }
+        else {
+          st.pointColor = colors.medium;
+          feat.setIgnStyle(st);
+        }
+      }
   
 
-    if(feat._api_properties._score > 0.8) {
-      st.pointColor = colors.veryGood;
-      feat.setIgnStyle(st);
-    }
-    else if(feat._api_properties._score > 0.5) {
-      st.pointColor = colors.good;
-      feat.setIgnStyle(st);
-    }
-    else {
-      st.pointColor = colors.medium;
-      feat.setIgnStyle(st);
-    }
+    
   
     for(let i in parseResults.header) {
       feat._data[parseResults.header[i]] = data[i];

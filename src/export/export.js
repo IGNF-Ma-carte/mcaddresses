@@ -105,18 +105,10 @@ const getXlsxExportData = function() {
         else {
             d.push("");
         }
-        if(f.getGeometry()) {
-            var coord = f.getGeometry().getCoordinates();
-            var lonlat = toLonLat(coord);
-            d.push(lonlat[0]);
-            d.push(lonlat[1]);
-        }
-        else {
-            d.push("");
-            d.push("");
-            d.push("");
-            d.push("");
-        }
+
+        d.push(f.get("Longitude"));
+        d.push(f.get("Latitude"));
+
         data.push(d);
     }
 
@@ -127,17 +119,17 @@ const getXlsxExportData = function() {
  * Formate les données pour l'export shp et csv
  * @returns {array} Les données formatées pour l'export shp et csv
  */
-const getExportData = function() {
+const getExportData = function(type) {
     var data = [];
 
     for(var i in geocodage.results.olFeatures) {
-        data.push(getFeatureExportData(geocodage.results.olFeatures[i]));
+        data.push(getFeatureExportData(geocodage.results.olFeatures[i], type));
     }
 
     return data;
 };
 
-const getFeatureExportData = function(feat) {
+const getFeatureExportData = function(feat, type) {
     let prop = feat._api_properties;
     let data = feat._data;
     var featData = {"score": prop._score};
@@ -166,15 +158,17 @@ const getFeatureExportData = function(feat) {
     else {
         featData["code INSEE"] = "";
     }
-    if(feat.getGeometry()) {
-        var coord = feat.getGeometry().getCoordinates();
-        var lonlat = toLonLat(coord);
-        featData["longitude"] = lonlat[0];
-        featData["latitude"] = lonlat[1];
-    }
-    else {
-        featData["longitude"] = "";
-        featData["latitude"] = "";
+    featData["longitude"] = feat.get("Longitude");
+    featData["latitude"] = feat.get("Latitude");
+
+    if(type == "kml" && feat.getGeometry() && feat.getGeometry().getType() == "Polygon") {
+        featData["polygoneCoords"] = [];
+        for(let i in feat.getGeometry().getCoordinates()) {
+            for(let j in feat.getGeometry().getCoordinates()[i]) {
+                coords = feat.getGeometry().getCoordinates()[i][j]
+                featData["polygoneCoords"].push([toLonLat(coords)]);
+            }
+        }
     }
 
     return featData;
@@ -210,13 +204,47 @@ const getCsvExportLink = function() {
  * @returns {string} Le xml
  */
 const getKml = function(data) {
-    var kml = '<?xml version="1.0" encoding="UTF-8"?><kml xmlns="http://www.opengis.net/kml/2.2">';
-    kml += '<Folder><Style id="veryGoodScore"><IconStyle><Icon><href>http://maps.google.com/mapfiles/kml/paddle/grn-blank.png</href></Icon></IconStyle></Style>';
-    kml += '<Style id="goodScore"><IconStyle><Icon><href>http://maps.google.com/mapfiles/kml/paddle/ylw-blank.png</href></Icon></IconStyle></Style>';
-    kml += '<Style id="mediumScore"><IconStyle><Icon><href>http://maps.google.com/mapfiles/kml/paddle/red-blank.png</href></Icon></IconStyle></Style>';
-    kml += '<Style id="manualScore"><IconStyle><Icon><href>http://maps.google.com/mapfiles/kml/paddle/wht-blank.png</href></Icon></IconStyle></Style>';
-    kml += '<name>Export MesAdresses</name>';
-    kml += '<description>Ce fichier a été créé via l\'application MesAdresses</description>';
+    var kml = `<?xml version="1.0" encoding="UTF-8"?>
+    <kml xmlns="http://www.opengis.net/kml/2.2">
+        `;
+    kml += `<Folder>
+            <Style id="veryGoodScore">
+                <IconStyle>
+                    <Icon><href>http://maps.google.com/mapfiles/kml/paddle/grn-blank.png</href></Icon>
+                </IconStyle>
+            </Style>
+            `;
+    kml += `<Style id="goodScore">
+                <IconStyle>
+                    <Icon><href>http://maps.google.com/mapfiles/kml/paddle/ylw-blank.png</href></Icon>
+                </IconStyle>
+            </Style>
+            `;
+    kml += `<Style id="mediumScore">
+                <IconStyle>
+                    <Icon><href>http://maps.google.com/mapfiles/kml/paddle/red-blank.png</href></Icon>
+                </IconStyle>
+            </Style>
+            `;
+    kml += `<Style id="manualScore">
+                <IconStyle>
+                    <Icon><href>http://maps.google.com/mapfiles/kml/paddle/wht-blank.png</href></Icon>
+                </IconStyle>
+            </Style>
+            `;
+    kml += `<Style id="polygon">
+                <LineStyle>
+                    <color>ff0088ff</color>
+                    <width>2</width>
+                </LineStyle>
+                <PolyStyle>
+                    <color>990088ff</color>
+                </PolyStyle>
+            </Style>
+            `;
+    kml += `<name>Export MesAdresses</name>
+            `;
+    kml += `<description>Ce fichier a été créé via l'application MesAdresses</description>`;
 
     for(var i in data) {
         if(data[i].score != 0) {
@@ -231,11 +259,44 @@ const getKml = function(data) {
                 style = "mediumScore";
             }
 
-            kml += '<Placemark><styleUrl>#' + style + '</styleUrl>';
-            kml += '<Point><coordinates>' + data[i].longitude + ',' + data[i].latitude + '</coordinates></Point>'
-            kml += '<ExtendedData>';
+            if(data[i].polygoneCoords) {
+                kml += `
+            <Placemark>
+                <styleUrl>#polygon</styleUrl>
+                `;
+                kml += `<Polygon>
+                    <outerBoundaryIs>
+                        <LinearRing>
+                            <coordinates>
+                                `;
+                for(let j in data[i].polygoneCoords) {
+                    kml += `` + data[i].polygoneCoords[j][0] + " " + `
+                                `;
+                }
+                kml += `</coordinates>
+                    </LinearRing>
+                </outerBoundaryIs>
+            </Polygon>
+    `;
+            }
+            else {
+                kml += `
+                <Placemark>
+                    <styleUrl>#' + style + '</styleUrl>
+                    `;
+                kml += `<Point>
+                    <coordinates>
+                        ` + data[i].longitude + ',' + data[i].latitude + `
+                    </coordinates>
+                </Point>`;
+            }
+            
+            kml += `        <ExtendedData>`;
             var d = "";
             for(var j in data[i]) {
+                if(j == "polygoneCoords") {
+                    continue;
+                }
                 if(data[i][j]) {
                         d = data[i][j].toString().replace(/&/g, '&amp;');
                         d = d.replace(/</g, '&lt;');
@@ -246,13 +307,20 @@ const getKml = function(data) {
                 else {
                     d = "";
                 }
-                kml += '<Data name="' + j + '"><value>' + d + '</value></Data>'
+                kml += `
+                <Data name="` + j + `">
+                    <value>` + d + `</value>
+                </Data>`
             }
-            kml += '</ExtendedData></Placemark>';
+            kml += `
+            </ExtendedData>
+        </Placemark>`;
         }
     }
 
-    kml += '</Folder></kml>';
+    kml += `
+    </Folder>
+</kml>`;
 
     return kml;
 }
@@ -261,7 +329,7 @@ const getKml = function(data) {
  * Crée le lien pour l'export kml
  */
 const getKmlExportLink = function() {
-    var data = getExportData();
+    var data = getExportData("kml");
 
     var kml = getKml(data);
 

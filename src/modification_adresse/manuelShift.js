@@ -33,7 +33,6 @@ const manualShiftValidation = function(validationCallback) {
             var reverseCallback = function(reverseGeocodeData) {
                 clearTimeout(timer);
                 var alti = f._api_properties.altitude;
-                console.log(f._api_properties.alternatives);
                 var clone = f.clone();
                 clone._data = f._data;
                 clone._api_properties = f._api_properties;
