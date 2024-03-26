@@ -26,8 +26,8 @@
         <label class='ol-ext-check ol-ext-checkbox' for='start_line_checkbox'><input type='checkbox'  id='start_line_checkbox' /><span></span> Lire le fichier à partir de la ligne n° :</label>
         <input type='number' id='start_line_input' disabled size=5 />
         <br/>
-        <label class='ol-ext-check ol-ext-checkbox' for='end_line_checkbox'><input type='checkbox'  id='end_line_checkbox' /><span></span> Arrêter de lire le fichier à la ligne n° :</label>
-        <input type='number' id='end_line_input' disabled size=5 />
+        <!-- <label class='ol-ext-check ol-ext-checkbox' for='end_line_checkbox'><input type='checkbox'  id='end_line_checkbox' /><span></span> Arrêter de lire le fichier à la ligne n° :</label>
+        <input type='number' id='end_line_input' disabled size=5 /> -->
       </div> 
     </li>
     <li data-expanded="0"> 
@@ -91,7 +91,7 @@
     </li>
     <li data-expanded="0"> 
       <input type="radio" name="accordion-1"> 
-      <label onclick="accordionCheck(this)" aria-expanded="false" aria-controls="mc-accordion-4">Récupérations d'informations supplémentaires</label>
+      <label onclick="accordionCheck(this)" aria-expanded="false" aria-controls="mc-accordion-4">Informations supplémentaires</label>
       <div aria-hidden="true" id="info_section_div"> 
         <p></p>
         <div>
@@ -99,6 +99,10 @@
         </div>
         <div id="trueGeometryCb" class="hidden">
           <label class='ol-ext-check ol-ext-checkbox' for='trueGeometry'><input type='checkbox' id='trueGeometry' /><span></span> Je récupère la géométrie de la parcelle</label>
+        </div>
+        <div id="cityFilterCb">
+          <label class='ol-ext-check ol-ext-checkbox' for='cityFilter'><input type='checkbox' id='cityFilter' /><span></span> Je priorise les résultats proches d'un lieu <span id='cityName'></br></span></label>
+          <div id="citySearch"></div>
         </div>
       </div> 
     </li>

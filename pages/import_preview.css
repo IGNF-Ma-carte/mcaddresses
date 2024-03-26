@@ -123,6 +123,31 @@ max-width: 14em;
   margin-top: 0.5em;
 }
 
+#cityFilterCb {
+  content: "";
+  margin-top: 0.5em;
+}
+
+#cityName {
+  border: unset;
+  color: unset;
+  inset: unset;
+  margin: unset;
+  font-size: unset;
+  vertical-align: unset;
+  color: gray;
+  margin-left: 2em;
+  width: auto;
+}
+
+.ol-ext-checkbox input:checked ~ #cityName {
+  background-color: unset;
+}
+
+.ol-ext-checkbox input:checked ~ #cityName::before {
+  content: unset;
+}
+
 #preview {
   overflow-x: auto;
   margin: 1em 5% 2em;
