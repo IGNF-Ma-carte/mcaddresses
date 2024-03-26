@@ -36,6 +36,12 @@ Exemple :
 | IDU parcelle |
 | ------------ |
 | 940670000D0050 |
+
+Code de département sur 2 caractères
++ Code commune sur 3 caractères
++ préfixe sur 3 caractères (ou 000 si absence de préfixe)
++ code de section sur 2 caractère (préfixe à 0 si code de section sur une seule lettre)
++ code parcelle sur 4 caractères (préfixe à 000 si code à un chiffre, 00 si code à 2 chiffres et 0 si code à 3 chiffres)
 `,
 criteres:
 `
