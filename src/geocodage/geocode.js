@@ -44,6 +44,7 @@ const clearGeocodage = function() {
   geocodage.altitude = undefined;
   geocodage.type = undefined;
   geocodage.truegeometry = undefined;
+  geocodage.pointFilter = undefined;
   geocodage.packLength = 100;
   geocodage.getFeatureIndex = getFeatureIndex;
   geocodage.results = { olFeatures: [], apiFeatures : [] };

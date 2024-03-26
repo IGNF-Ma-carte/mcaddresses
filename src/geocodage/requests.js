@@ -1,7 +1,6 @@
 import { geocodage } from "./geocode";
 import { parseResults } from "../import/selectFile";
 import { toLonLat } from 'ol/proj'
-import { boundingExtent } from 'ol/extent'
 
 var geocodLink = "https://data.geopf.fr/geocodage/";
 var altiGeocodLink = "https://data.geopf.fr/altimetrie/1.0/calcul/alti/rest/elevation.json?resource=ign_rge_alti_wld&delimiter=|&indent=false&measures=false&zonly=false";
@@ -95,6 +94,11 @@ const createAltiRequestListByPack = function() {
 
       if(geocodingType == "parcel" && geocodage.trueGeometry) {
         r += "&returntruegeometry=true";
+      }
+
+      if(geocodage.pointFilter) {
+        let lonlat = toLonLat(geocodage.pointFilter);
+        r += "&lon=" + lonlat[0] + "&lat=" + lonlat[1];
       }
 
       res.push(r);

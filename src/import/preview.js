@@ -5,11 +5,11 @@ import { createRequestListByPack } from "../geocodage/requests";
 import carte from "../carte";
 import { setGeocodePatience } from "../geocodage/loader";
 import { actionWindow } from "./selectFile";
-import { setFileLineSectionEvents, addOptionsToSelect, setSeparatorSectionEvents, setColumnSectionEvents } from "./parameters";
+import { setFileLineSectionEvents, addOptionsToSelect, setSeparatorSectionEvents, setColumnSectionEvents, setCityFilterEvent } from "./parameters";
 import {setRequestListByPack } from "../geocodage/requests";
 import helpStr from '../help';
 import CSVPreview from "mcutils/control/CSVPreview";
-
+import SearchGeoportail from "mcutils/ol/SearchGeoportail";
 import preview_html from '../../pages/import_preview-page.html';
 import import_geocod_html from '../../pages/import_geocod-page.html';
 
@@ -28,21 +28,34 @@ const preview = function (csv) {
         const h = elt.dataset.help;
         helpDialog(elt, helpStr[h], { className: h });
     });
+
+    var search = new SearchGeoportail({
+        className : "hidden",
+        target : document.getElementById("citySearch"),
+        reverse: true
+      });
+    carte.map.addControl (search);
+    search.on("select", function(e) {
+        document.getElementById("cityName").innerText = e.search.fulltext;
+        geocodage.pointFilter = e.coordinate;
+    })
   
     addOptionsToSelect();
   
     setSeparatorSectionEvents();
     setFileLineSectionEvents();
     setColumnSectionEvents();
+    setCityFilterEvent();
 
     csvp = new CSVPreview({
         target: document.getElementById("preview"),
         csv: csv,
         nbLines: 4,
-        line: true
+        line: true,
+        header: true
     });
-    csvp.showData({skipEmptyLines: true, header: document.getElementById("first_line").checked});
-
+    csvp.setProperties({skipEmptyLines: true, header:document.getElementById("first_line").checked });
+    csvp.showData(csvp.getProperties());
     document.getElementById("colPlusBtn").click();
   
     //Event lancement du géocodage
@@ -55,10 +68,10 @@ const preview = function (csv) {
             return;
         }
   
-        if (parseResults.startLine && parseResults.endLine && parseResults.endLine < parseResults.startLine) {
-            alert("Incohérence dans les lignes de début et de fin de lecture du fichier dans l'onglet 'Choix des lignes du fichier'.");
-            return;
-        }
+        // if (parseResults.startLine && parseResults.endLine && parseResults.endLine < parseResults.startLine) {
+        //     alert("Incohérence dans les lignes de début et de fin de lecture du fichier dans l'onglet 'Choix des lignes du fichier'.");
+        //     return;
+        // }
   
         var gType = "address";
         if (parseResults.columnCorrespondance["[Numéro de parcelle]"]) {
@@ -73,9 +86,14 @@ const preview = function (csv) {
             geocodage.trueGeometry = true;
         }
 
-        if(parseResults.endLine) {
-            parseResults.data.splice(parseResults.endLine, parseResults.data.length -1);
+        if(!document.getElementById("cityFilter").checked) {
+            geocodage.pointFilter = null;
         }
+
+
+        // if(parseResults.endLine) {
+        //     parseResults.data.splice(parseResults.endLine, parseResults.data.length -1);
+        // }
         if(parseResults.startLine) {
             parseResults.data.splice(0, parseResults.startLine-1);
         }
@@ -142,7 +160,8 @@ const resetColumnCorresp = function () {
  * Màj de l'aspect de la prévisualisation lorsqu'un champ est sélectionné/déselectionné dans une liste déroulante
  */
 const setHeaderSelect = function () {
-    csvp.showData({delimiter: parseResults.delim, skipEmptyLines: true, header: document.getElementById("first_line").checked, comments: parseResults.comm})
+
+    csvp.showData(csvp.getProperties());
     var trElem = document.getElementById("preview").children[0].children[0].children[0];
     var cr = parseResults.columnCorrespondance;
     var nbCol;

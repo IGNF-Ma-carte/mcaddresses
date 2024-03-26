@@ -1,5 +1,6 @@
 import { parseResults} from "./selectFile";
-import { setHeaderSelect, resetColumnCorresp, csvp } from "./preview";
+import { csvp, setHeaderSelect, resetColumnCorresp, csvp } from "./preview";
+import { geocodage } from "../geocodage/geocode";
 
 /**
  * Fonction pour créer les events listener de l'onglet "séparateur" de la fenêtre de paramétrage du géocodage
@@ -38,7 +39,11 @@ const setFileLineSectionEvents = function () {
                 parseResults.header[i] = Number(i) + 1;
             }
         }
-        csvp.showData({delimiter: parseResults.delim, skipEmptyLines: true, header: document.getElementById("first_line").checked, comments: parseResults.comm})
+        let checkedAddressFormat = getAddressFormat();
+        csvp.setProperties({header: document.getElementById("first_line").checked});
+        csvp.showData(csvp.getProperties());
+        setTimeout(() => checkedAddressFormat.click(), 100);
+        
         addOptionsToSelect();
     });
   
@@ -50,16 +55,24 @@ const setFileLineSectionEvents = function () {
             document.getElementById("ignore_input").focus();
             parseResults.comm = document.getElementById("ignore_input").value;
         }
-        csvp.showData({delimiter: parseResults.delim, skipEmptyLines: true, header: document.getElementById("first_line").checked, comments: parseResults.comm})
+        let checkedAddressFormat = getAddressFormat();
+        csvp.setProperties({comments: parseResults.comm});
+        csvp.showData(csvp.getProperties());
+        setTimeout(() => checkedAddressFormat.click(), 100);
     });
-    document.getElementById("ignore_input").addEventListener("input", () => {
-        parseResults.comm = false;
-        if (document.getElementById("ignore_checkbox").checked) {
-            parseResults.comm = document.getElementById("ignore_input").value;
-            addOptionsToSelect();
+    document.getElementById("ignore_input").addEventListener("change", () => {
+        if(!document.getElementById("ignore_checkbox").checked) {
+            return;
         }
-
-        csvp.showData({delimiter: parseResults.delim, skipEmptyLines: true, header: document.getElementById("first_line").checked, comments: parseResults.comm})
+        parseResults.comm = false;
+        //if (document.getElementById("ignore_checkbox").checked) {
+            parseResults.comm = document.getElementById("ignore_input").value;
+            //addOptionsToSelect();
+        //}
+        let checkedAddressFormat = getAddressFormat();
+        csvp.setProperties({comments: parseResults.comm});
+        csvp.showData(csvp.getProperties());
+        setTimeout(() => checkedAddressFormat.click(), 100);
     });
   
     document.getElementById("start_line_checkbox").addEventListener("click", () => {
@@ -72,40 +85,46 @@ const setFileLineSectionEvents = function () {
         else {
             parseResults.startLine = 0;
         }
+        let checkedAddressFormat = getAddressFormat();
+        csvp.setProperties({skipLines : parseResults.startLine-1})
+        csvp.showData(csvp.getProperties());
+        setTimeout(() => checkedAddressFormat.click(), 100);
     });
     document.getElementById("start_line_input").min = 1;
     document.getElementById("start_line_input").max = parseResults.data.length;
     document.getElementById("start_line_input").addEventListener("change", () => {
-        if (document.getElementById("start_line_checkbox").checked) {
-            parseResults.startLine = Number(document.getElementById("start_line_input").value);
+        if(!document.getElementById("start_line_checkbox").checked) {
+            return;
         }
-        else {
-            parseResults.startLine = 0;
-        }
+        parseResults.startLine = Number(document.getElementById("start_line_input").value);
+        let checkedAddressFormat = getAddressFormat();
+        csvp.setProperties({skipLines : parseResults.startLine-1})
+        csvp.showData(csvp.getProperties());
+        setTimeout(() => checkedAddressFormat.click(), 100);
     });
   
-    document.getElementById("end_line_checkbox").addEventListener("click", () => {
-        document.getElementById("end_line_input").disabled = !document.getElementById("end_line_checkbox").checked;
-        document.getElementById("end_line_input").classList.toggle("focus");
-        if (document.getElementById("end_line_checkbox").checked) {
-            document.getElementById("end_line_input").focus();
-            parseResults.endLine = Number(document.getElementById("end_line_input").value);
-        }
-        else {
-            parseResults.endLine = 0;
-        }
-    });
+    // document.getElementById("end_line_checkbox").addEventListener("click", () => {
+    //     document.getElementById("end_line_input").disabled = !document.getElementById("end_line_checkbox").checked;
+    //     document.getElementById("end_line_input").classList.toggle("focus");
+    //     if (document.getElementById("end_line_checkbox").checked) {
+    //         document.getElementById("end_line_input").focus();
+    //         parseResults.endLine = Number(document.getElementById("end_line_input").value);
+    //     }
+    //     else {
+    //         parseResults.endLine = 0;
+    //     }
+    // });
   
-    document.getElementById("end_line_input").min = 1;
-    document.getElementById("end_line_input").max = parseResults.data.length;
-    document.getElementById("end_line_input").addEventListener("change", () => {
-        if (document.getElementById("end_line_checkbox").checked) {
-            parseResults.endLine = Number(document.getElementById("end_line_input").value);
-        }
-        else {
-            parseResults.endLine = 0;
-        }
-    });
+    // document.getElementById("end_line_input").min = 1;
+    // document.getElementById("end_line_input").max = parseResults.data.length;
+    // document.getElementById("end_line_input").addEventListener("change", () => {
+    //     if (document.getElementById("end_line_checkbox").checked) {
+    //         parseResults.endLine = Number(document.getElementById("end_line_input").value);
+    //     }
+    //     else {
+    //         parseResults.endLine = 0;
+    //     }
+    // });
 };
   
 /**
@@ -334,8 +353,11 @@ const setSeparator = function (separator) {
         default:
             parseResults.delim = "";
     }
-  
-    csvp.showData({delimiter: parseResults.delim, skipEmptyLines: true, header: document.getElementById("first_line").checked});
+    let checkedAddressFormat = getAddressFormat();
+    csvp.setProperties({delimiter : parseResults.delim});
+    csvp.showData(csvp.getProperties());
+    setTimeout(() => checkedAddressFormat.click(), 100);
+    //csvp.showData({delimiter: parseResults.delim, skipEmptyLines: true, header: document.getElementById("first_line").checked});
   };
   
 /**
@@ -403,4 +425,31 @@ const setSelectEvent = function () {
     }
 };
 
-export {setSeparatorSectionEvents, setFileLineSectionEvents, setColumnSectionEvents, addOptionsToSelect};
+/**
+ * Retourne l'élément du DOM correspondant à la checkbox de formatage de l'addresse actuellement cochée
+ * @returns 
+ */
+let getAddressFormat = function() {
+    let checkedAddressFormat = false;
+    if(document.getElementById("three_col").checked) {
+        checkedAddressFormat = document.getElementById("three_col");
+    } else if (document.getElementById("one_col").checked) {
+        checkedAddressFormat = document.getElementById("one_col");
+    } else if(document.getElementById("one_col_parcel").checked) {
+        checkedAddressFormat = document.getElementById("one_col_parcel");
+    }
+    return checkedAddressFormat;
+};
+
+let setCityFilterEvent = function() {
+    let el = document.getElementById("cityFilter");
+    el.addEventListener("click", function() {
+        if(el.checked) {
+            document.querySelector("#citySearch div").classList.remove("hidden");
+        } else {
+            document.querySelector("#citySearch div").classList.add("hidden");
+        }   
+    });
+}
+
+export {setSeparatorSectionEvents, setFileLineSectionEvents, setColumnSectionEvents, addOptionsToSelect, setCityFilterEvent};
