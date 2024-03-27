@@ -54,9 +54,16 @@ import { geocodage } from "../geocodage/geocode";
     for (let i in trList) {
         if (i % 2 == 0) {
             trList[i].addEventListener("mouseover", function () {
-                var coord = fArray[Number(this.id)].getGeometry().getCoordinates();
+                let zoom = 16;
+                let coord;
+                if(fArray[Number(this.id)].getGeometry().getType() == "Polygon") {
+                    coord = fArray[Number(this.id)].getGeometry().getCoordinates()[0][0];
+                    zoom = 18;
+                } else {
+                    coord = fArray[Number(this.id)].getGeometry().getCoordinates();
+                }
                 carte.getMap().getView().setCenter(coord);
-                carte.getMap().getView().setZoom(16);
+                carte.getMap().getView().setZoom(zoom);
 
                 tl.getSource().addFeature(geocodage.results.olFeatures[geocodage.getFeatureIndex(fArray[Number(this.id)])]);
 
@@ -65,8 +72,17 @@ import { geocodage } from "../geocodage/geocode";
             trList[i].addEventListener("click", function () {
                 var f = fArray[Number(this.id)];
                 carte.getInteraction("select").getFeatures().clear();
-                carte.getMap().getView().setCenter(f.getGeometry().getCoordinates());
-                carte.getMap().getView().setZoom(16);
+                let zoom = 16;
+                let coord;
+                if(f.getGeometry().getType() == "Polygon") {
+                    coord = f.getGeometry().getCoordinates()[0][0];
+                    zoom = 18;
+                } else {
+                    coord = f.getGeometry().getCoordinates();
+                }
+
+                carte.getMap().getView().setCenter(coord);
+                carte.getMap().getView().setZoom(zoom);
                 tl.getSource().clear();
 
                 tl.getSource().addFeature(geocodage.results.olFeatures[geocodage.getFeatureIndex(fArray[Number(this.id)])]);

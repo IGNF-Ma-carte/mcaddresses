@@ -42,7 +42,7 @@ const setFileLineSectionEvents = function () {
         let checkedAddressFormat = getAddressFormat();
         csvp.setProperties({header: document.getElementById("first_line").checked});
         csvp.showData(csvp.getProperties());
-        setTimeout(() => checkedAddressFormat.click(), 100);
+        setTimeout(() => function() {if(checkedAddressFormat) {checkedAddressFormat.click();}}, 100);
         
         addOptionsToSelect();
     });
@@ -58,7 +58,7 @@ const setFileLineSectionEvents = function () {
         let checkedAddressFormat = getAddressFormat();
         csvp.setProperties({comments: parseResults.comm});
         csvp.showData(csvp.getProperties());
-        setTimeout(() => checkedAddressFormat.click(), 100);
+        setTimeout(() => function() {if(checkedAddressFormat) {checkedAddressFormat.click();}}, 100);
     });
     document.getElementById("ignore_input").addEventListener("change", () => {
         if(!document.getElementById("ignore_checkbox").checked) {
@@ -72,7 +72,7 @@ const setFileLineSectionEvents = function () {
         let checkedAddressFormat = getAddressFormat();
         csvp.setProperties({comments: parseResults.comm});
         csvp.showData(csvp.getProperties());
-        setTimeout(() => checkedAddressFormat.click(), 100);
+        setTimeout(() => function() {if(checkedAddressFormat) {checkedAddressFormat.click();}}, 100);
     });
   
     document.getElementById("start_line_checkbox").addEventListener("click", () => {
@@ -88,7 +88,7 @@ const setFileLineSectionEvents = function () {
         let checkedAddressFormat = getAddressFormat();
         csvp.setProperties({skipLines : parseResults.startLine-1})
         csvp.showData(csvp.getProperties());
-        setTimeout(() => checkedAddressFormat.click(), 100);
+        setTimeout(() => function() {if(checkedAddressFormat) {checkedAddressFormat.click();}}, 100);
     });
     document.getElementById("start_line_input").min = 1;
     document.getElementById("start_line_input").max = parseResults.data.length;
@@ -100,7 +100,7 @@ const setFileLineSectionEvents = function () {
         let checkedAddressFormat = getAddressFormat();
         csvp.setProperties({skipLines : parseResults.startLine-1})
         csvp.showData(csvp.getProperties());
-        setTimeout(() => checkedAddressFormat.click(), 100);
+        setTimeout(() => function() {if(checkedAddressFormat) {checkedAddressFormat.click();}}, 100);
     });
   
     // document.getElementById("end_line_checkbox").addEventListener("click", () => {
@@ -356,7 +356,7 @@ const setSeparator = function (separator) {
     let checkedAddressFormat = getAddressFormat();
     csvp.setProperties({delimiter : parseResults.delim});
     csvp.showData(csvp.getProperties());
-    setTimeout(() => checkedAddressFormat.click(), 100);
+    setTimeout(() => function() {if(checkedAddressFormat) {checkedAddressFormat.click();}}, 100);
     //csvp.showData({delimiter: parseResults.delim, skipEmptyLines: true, header: document.getElementById("first_line").checked});
   };
   

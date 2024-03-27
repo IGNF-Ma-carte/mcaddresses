@@ -42,6 +42,9 @@ import { isParcel } from "../modification_adresse/address_fct";
     if(item.coordinates) {
       if(geocodage.type == "parcel" && geocodage.trueGeometry) {
         let fromLonLatCoords = [];
+        if(item.trueGeometry.coordinates.length > 1 && typeof(item.trueGeometry.coordinates[0][0][0]) != "number") {
+          item.trueGeometry.coordinates = item.trueGeometry.coordinates[0];
+        }
         for(let i in item.trueGeometry.coordinates) {
           for(let j in item.trueGeometry.coordinates[i]) {
             fromLonLatCoords.push(fromLonLat(item.trueGeometry.coordinates[i][j]));
