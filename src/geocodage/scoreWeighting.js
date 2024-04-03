@@ -1,5 +1,8 @@
 import { parseResults } from "../import/selectFile";
 import formatAddress  from "./formatAddress";
+import { geocodage } from "./geocode";
+import {toLonLat} from 'ol/proj';
+import * as sphere from 'ol/sphere.js'
 
 /**
  * Pondère le score d'une réponse de l'API de géocodage en fonction de certains critères
@@ -43,6 +46,20 @@ const calcIndice = function(feat, data) {
     if (correctDep && cpost != properties.postalCode) {
       score *= 0.8;
     }
+
+    if(geocodage.pointFilter) {
+      lonLatFilter = toLonLat(geocodage.pointFilter);
+      let distance = sphere.getDistance(feat.geometry.coordinates, lonLatFilter)/1000;
+
+      if(distance > 10 && distance <= 50) {
+        score *= 0.8;
+      } else if(distance > 50 && distance <= 100) {
+        score *= 0.6;
+      } else if( distance > 100) {
+        score *= 0.4;
+      }
+    }
+
     return score;
   };
   

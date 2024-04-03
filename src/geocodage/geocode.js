@@ -162,7 +162,33 @@ Promise.delay = function(val, t) {
             endGeocodAction();
           }
         }
+      })
+      .catch(error => {
+        console.error(error);
       });
+    })
+    .catch(error => {
+      console.error(error);
+      if(!geocodage.error) {
+        geocodage.error = [];
+      }
+      for(let i=0; i < 100; i++) {
+        geocodage.error.push({promise: null, index: geocodage.results.apiFeatures.length + Number(i)});
+      }
+      updateFeaturesArrayWithErrors();
+
+      if(geocodage.altitude) {
+        geocodage.currentPack++;
+        addFeat();
+        altiGeocode();
+      }
+      else if ((geocodage.currentPack + 1) < requestListByPack.length && !stopGeocode){
+        geocodage.currentPack++;
+        geocode();
+      }
+      else {
+        endGeocodAction();
+      }
     });
     //en attendant que les promises du paquet actuel soient résolues, on ajoute dans la carte les adresses géocodées lors du paquet précédent
     if(geocodage.currentPack && !geocodage.altitude) {
@@ -290,7 +316,13 @@ const geocodeAgain = function (rqstList, firstIteration) {
           endGeocodAction();
         }
       }
+    })
+    .catch(error => {
+      console.error(error);
     });
+  })
+  .catch(error => {
+    console.error(error);
   });
 };
 

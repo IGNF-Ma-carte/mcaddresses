@@ -180,7 +180,6 @@ const getFeatureExportData = function(feat, type) {
  */
 const getCsvExportLink = function() {
     var data = getExportData();
-
     var csv = Papa.unparse(data, {
         quotes: true,
         delimiter: parseResults.meta.delimiter,
@@ -188,7 +187,11 @@ const getCsvExportLink = function() {
         newline: parseResults.meta.linebreak
     });
 
-    var blob = new Blob([csv], {type: 'text/plain;charset=utf8'});
+    try {
+        var blob = new Blob([csv], {type: 'text/plain;charset=utf8'});
+    } catch  {
+        alert("Désolé, le fichier étant trop volumineux, la mémoire du navigateur n'est pas suffisante pour générer l'export :(");
+    }
 
     if (exportFile !== null) {
         window.URL.revokeObjectURL(exportFile);
@@ -333,7 +336,12 @@ const getKmlExportLink = function() {
 
     var kml = getKml(data);
 
-    var blob = new Blob([kml], {type: 'text/plain;charset=utf8'});
+    try {
+        var blob = new Blob([kml], {type: 'text/plain;charset=utf8'});
+    }
+    catch (error) {
+        alert("Désolé, le fichier étant trop volumineux, la mémoire du navigateur n'est pas suffisante pour générer l'export :(");
+    }
 
     if (exportFile !== null) {
         window.URL.revokeObjectURL(exportFile);
@@ -350,7 +358,13 @@ const getGeojsonExportLink = function() {
     var format = new GeoJSON({"dataProjection": "EPSG:4326", "featureProjection": "EPSG:3857"});
     var features = getFeatureLayer().getSource().getFeatures();
 
-    var obj = format.writeFeatures(features);
+    try {
+        var obj = format.writeFeatures(features);
+    }
+    catch (error) {
+        alert("Désolé, le fichier étant trop volumineux, la mémoire du navigateur n'est pas suffisante pour générer l'export :(");
+    }
+
     var blob = new Blob([obj], {type: 'text/plain;charset=utf8'});
 
     if (exportFile !== null) {
@@ -377,10 +391,22 @@ const getXlsxExportLink = function() {
     };
     wb.SheetNames.push("Adresses");
 
-    var ws = XLSX.utils.aoa_to_sheet(data);
+    
+    try {
+        var ws = XLSX.utils.aoa_to_sheet(data);
+    }
+    catch (error) {
+        alert("Désolé, le fichier étant trop volumineux, la mémoire du navigateur n'est pas suffisante pour générer l'export :(");n;
+    }
+
     wb.Sheets["Adresses"] = ws;
 
-    var wbout = XLSX.write(wb, {bookType:'xlsx',  type: 'binary'});
+    try {
+        var wbout = XLSX.write(wb, {bookType:'xlsx',  type: 'binary'});
+    }
+    catch (error) {
+        alert("Désolé, le fichier étant trop volumineux, la mémoire du navigateur n'est pas suffisante pour générer l'export :(");
+    }
 
     function s2ab(s) { 
         var buf = new ArrayBuffer(s.length); //convert s to arrayBuffer
