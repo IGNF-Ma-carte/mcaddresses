@@ -48,7 +48,7 @@ const calcIndice = function(feat, data) {
     }
 
     if(geocodage.pointFilter) {
-      lonLatFilter = toLonLat(geocodage.pointFilter);
+      let lonLatFilter = toLonLat(geocodage.pointFilter);
       let distance = sphere.getDistance(feat.geometry.coordinates, lonLatFilter)/1000;
 
       if(distance > 10 && distance <= 50) {
