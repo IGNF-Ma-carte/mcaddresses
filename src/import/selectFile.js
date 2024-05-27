@@ -61,6 +61,10 @@ const actionWindow = function () {
                             preview(evt.target.result);
                         }                 
                     }
+
+                    if(parseResults.data.length > 20000) {
+                        alert("Attention, votre fichier contient plusieurs dizaines de milliers de lignes. Cela pourrait entrainer des erreurs lors de l'affichage ou de l'export des données.");
+                    }
                 }
             });
         };
