@@ -25,7 +25,7 @@ import { listCtrl } from "../liste_adresses/setList";
   }
     var proms_batch = createRequestList(data, geocodingType).map(url => fetch(url, { method: 'GET', mode: 'cors', cache: 'default' }));
     var timeout_proms_batch = proms_batch.map(p => {return Promise.race([p, Promise.delay({ok: false})])});
-    setGeocodePatience(false, true);
+    setGeocodePatience(false);
     geocodePatience(timeout_proms_batch, false, true);
   
     return Promise.all(timeout_proms_batch)

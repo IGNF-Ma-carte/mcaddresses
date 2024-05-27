@@ -99,7 +99,7 @@ const altiGeocode = function()
    var proms_batch = [request].map(url => fetch(url, { method: 'GET', mode: 'cors', cache: 'default' }));
    var timeout_proms_batch = proms_batch.map(p => {return Promise.race([p, Promise.delay({ok: false})])});
    
-   setGeocodePatience("altitude", true)
+   setGeocodePatience("altitude")
    geocodePatience(timeout_proms_batch, "altitude", true);
  
    return Promise.all(timeout_proms_batch)

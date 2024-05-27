@@ -207,6 +207,7 @@ const getCsvExportLink = function() {
  * @returns {string} Le xml
  */
 const getKml = function(data) {
+    let kmlArray = [];
     var kml = `<?xml version="1.0" encoding="UTF-8"?>
     <kml xmlns="http://www.opengis.net/kml/2.2">
         `;
@@ -249,84 +250,92 @@ const getKml = function(data) {
             `;
     kml += `<description>Ce fichier a été créé via l'application MesAdresses</description>`;
 
-    for(var i in data) {
-        if(data[i].score != 0) {
-            var style = "manualScore";
-            if(data[i].score > 0.8) {
-                style = "veryGoodScore";
-            }
-            else if(data[i].score > 0.5) {
-                style = "goodScore";
-            }
-            else if(data[i].score > 0) {
-                style = "mediumScore";
-            }
+    let start = 0;
 
-            if(data[i].polygoneCoords) {
-                kml += `
-            <Placemark>
-                <styleUrl>#polygon</styleUrl>
-                `;
-                kml += `<Polygon>
-                    <outerBoundaryIs>
-                        <LinearRing>
-                            <coordinates>
-                                `;
-                for(let j in data[i].polygoneCoords) {
-                    kml += `` + data[i].polygoneCoords[j][0] + " " + `
-                                `;
+    while(start < data.length) {
+        let end = start + 10000;
+        if(data.length < end) {
+            end = data.length;
+        }
+        for(var i = start; i < end; i++) {
+            if(data[i].score != 0) {
+                var style = "manualScore";
+                if(data[i].score > 0.8) {
+                    style = "veryGoodScore";
                 }
-                kml += `</coordinates>
-                    </LinearRing>
-                </outerBoundaryIs>
-            </Polygon>
-    `;
-            }
-            else {
-                kml += `
+                else if(data[i].score > 0.5) {
+                    style = "goodScore";
+                }
+                else if(data[i].score > 0) {
+                    style = "mediumScore";
+                }
+    
+                if(data[i].polygoneCoords) {
+                    kml += `
                 <Placemark>
-                    <styleUrl>#' + style + '</styleUrl>
+                    <styleUrl>#polygon</styleUrl>
                     `;
-                kml += `<Point>
-                    <coordinates>
-                        ` + data[i].longitude + ',' + data[i].latitude + `
-                    </coordinates>
-                </Point>`;
-            }
-            
-            kml += `        <ExtendedData>`;
-            var d = "";
-            for(var j in data[i]) {
-                if(j == "polygoneCoords") {
-                    continue;
-                }
-                if(data[i][j]) {
-                        d = data[i][j].toString().replace(/&/g, '&amp;');
-                        d = d.replace(/</g, '&lt;');
-                        d = d.replace(/>/g, '&gt;');
-                        d = d.replace(/"/g, '&quot;');
-                        d = d.replace(/'/g, '&apos;');
+                    kml += `<Polygon>
+                        <outerBoundaryIs>
+                            <LinearRing>
+                                <coordinates>
+                                    `;
+                    for(let j in data[i].polygoneCoords) {
+                        kml += `` + data[i].polygoneCoords[j][0] + " " + `
+                                    `;
+                    }
+                    kml += `</coordinates>
+                        </LinearRing>
+                    </outerBoundaryIs>
+                </Polygon>
+        `;
                 }
                 else {
-                    d = "";
+                    kml += `
+                    <Placemark>
+                        <styleUrl>#' + style + '</styleUrl>
+                        `;
+                    kml += `<Point>
+                        <coordinates>
+                            ` + data[i].longitude + ',' + data[i].latitude + `
+                        </coordinates>
+                    </Point>`;
+                }
+                
+                kml += `        <ExtendedData>`;
+                var d = "";
+                for(var j in data[i]) {
+                    if(j == "polygoneCoords") {
+                        continue;
+                    }
+                    if(data[i][j]) {
+                            d = data[i][j].toString().replace(/&/g, '&amp;');
+                            d = d.replace(/</g, '&lt;');
+                            d = d.replace(/>/g, '&gt;');
+                            d = d.replace(/"/g, '&quot;');
+                            d = d.replace(/'/g, '&apos;');
+                    }
+                    kml += `
+                    <Data name="` + j + `">
+                        <value>` + d + `</value>
+                    </Data>`
                 }
                 kml += `
-                <Data name="` + j + `">
-                    <value>` + d + `</value>
-                </Data>`
+                </ExtendedData>
+            </Placemark>`;
             }
-            kml += `
-            </ExtendedData>
-        </Placemark>`;
         }
+        kmlArray.push(kml);
+        kml = "";
+        start += 10000;
     }
 
-    kml += `
+    kmlArray.push(`
     </Folder>
-</kml>`;
+</kml>`);
 
-    return kml;
-}
+return kmlArray;
+};
 
 /**
  * Crée le lien pour l'export kml

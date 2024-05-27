@@ -427,6 +427,7 @@ const getBestScoreIndex = function(elem, data) {
   setList();
 
   updatePanelView("unselect");
+  parseResults.data = null;
 };
 
 export {geocodage, stopGeocode, setStopGeocode, clearGeocodage, geocode, getBestScoreIndex, getAlternatives, endGeocodAction};

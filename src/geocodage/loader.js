@@ -8,7 +8,7 @@ import dialog from "mcutils/dialog/dialog";
  * @param {string} type : type de patience (géocodage, alticodage, geocodage inversée)
  * @param {booléen} unique : booléen pour savoir si c'est un géocodage unique ou non
  */
-const setGeocodePatience = function (type, unique) {
+const setGeocodePatience = function (type) {
   var cnt = "<label id='progress'>0.00%</label><button id='stop_geoc' class='button button-ghost'>Arrêter la localisation</button>";
   var title = "Localisation en cours...";
   if (type == "altitude") {
@@ -17,11 +17,15 @@ const setGeocodePatience = function (type, unique) {
   } else if (type == "reverse") {
     title = "Récupération de l'adresse en cours..."
   }
-  var dataLength = parseResults.data.length;
+  var dataLength = 1;
 
-  if (unique) {
-    dataLength = 1;
+  if(parseResults.data) {
+    dataLength = parseResults.data.length;
   }
+
+  // if (unique) {
+  //   dataLength = 1;
+  // }
 
   dialog.show({
     content: cnt,
@@ -99,7 +103,11 @@ const setGeocodePatience = function (type, unique) {
     }
     var secondsIndex = "totalSeconds";
     var currentPack = geocodage.currentPack;
-    var dataLength = parseResults.data.length;
+    var dataLength = 1;
+
+    if(parseResults.data) {
+      dataLength = parseResults.data.length;
+    }
     if(type == "altitude") {
       requests = altiRequestListByPack;
       secondsIndex = "altiTotalSeconds";

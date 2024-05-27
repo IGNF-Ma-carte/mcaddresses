@@ -18,7 +18,7 @@ import { parseResults } from "../import/selectFile";
                                 switch (click){
                                     case 'submit':
                                         let index = geocodage.getFeatureIndex(getSelectedFeature());
-                                        parseResults.data.splice(index, 1);
+                                        //parseResults.data.splice(index, 1);
                                         geocodage.results.olFeatures.splice(index, 1);
                                         geocodage.results.apiFeatures.splice(index, 1);
                                         for(let i=index; i<geocodage.results.olFeatures.length; i++) {

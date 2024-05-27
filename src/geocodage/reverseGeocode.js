@@ -14,7 +14,7 @@ const uniqueReverseGeocode = function(feature, callback) {
   
     var proms_batch = [rqst].map(url => fetch(url, { method: 'GET', mode: 'cors', cache: 'default' }));
   
-    setGeocodePatience("reverse", true)
+    setGeocodePatience("reverse")
     geocodePatience(proms_batch, "reverse", true);
   
     fetchWithTimeout(rqst, {timeout: 15000, error: callback}).then(function(resp) {

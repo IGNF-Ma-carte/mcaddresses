@@ -66,7 +66,7 @@ const addAddress = function() {
         }
         data.push(val);
     }
-    parseResults.data.push(data);
+    //parseResults.data.push(data);
     unitaryGeocode([data], -1);
 };
 
