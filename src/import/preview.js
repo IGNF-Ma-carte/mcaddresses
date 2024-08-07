@@ -9,7 +9,7 @@ import { setFileLineSectionEvents, addOptionsToSelect, setSeparatorSectionEvents
 import {setRequestListByPack } from "../geocodage/requests";
 import helpStr from '../help';
 import CSVPreview from "mcutils/control/CSVPreview";
-import SearchGeoportail from "mcutils/ol/SearchGeoportail";
+import SearchGeoportail from "ol-ext/control/SearchGeoportail";
 import preview_html from '../../pages/import_preview-page.html';
 import import_geocod_html from '../../pages/import_geocod-page.html';
 
