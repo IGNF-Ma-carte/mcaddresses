@@ -424,6 +424,9 @@ background-color: #E9ECEF;
   background-color: #F4F6F8;
   bottom: 0;
 }
+.ol-feature-list .ol-scroll-container {
+  max-height: calc(100vh - 15em);
+}
 
 .ol-feature-list {
   font-size: 13px;

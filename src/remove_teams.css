@@ -1,0 +1,6 @@
+/* Remove teams menu (v4.2 bug) */
+.userMenu li.submenu ul li:nth-child(5),
+.userMenu li.submenu ul li:nth-child(6),
+.userMenu li.submenu ul li:nth-child(7) {
+    display: none;
+}

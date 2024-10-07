@@ -1,5 +1,6 @@
 {
     "server": "https://qlf-macarte.ign.fr/",
+    "server-1": "https://macarte.ign.fr/",
     "viewer": "https://ignf-ma-carte.github.io/mcviewer/?map=$ID&$NOTITLE",
     "editor": "https://ignf-ma-carte.github.io/mceditor/?id=$ID",
     "userProfile": "https://qlf-macarte.ign.fr/utilisateur/$NAME",
