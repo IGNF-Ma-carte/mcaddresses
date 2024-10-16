@@ -14,10 +14,6 @@ import './unload'
 
 import import_geocod_html from '../pages/import_geocod-page.html'
 
-// [TODO] remove to activate teams menus
-import './remove_teams.css'
-// [END TODO]
-
 charte.setApp('geocod', 'Ma carte');
 
 // Add menu button
