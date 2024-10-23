@@ -14,7 +14,7 @@ import './unload'
 
 import import_geocod_html from '../pages/import_geocod-page.html'
 
-charte.setApp('geocod', 'Ma carte');
+charte.setApp('geocod', 'Ma carte', ['owner', 'editor']);
 
 // Add menu button
 charte.addTool('export', 'fi-download', 'Enregistrer dans un fichier', () => exportDialog());
