@@ -74,11 +74,16 @@ body[data-access='enforce'] .green, body[data-access='enforce'] .yellow, body[da
 }
 
 .ol-search .search {
-  font-size: 0.8em;
+  font-size: .8em;
+  padding: .7rem;
+  line-height: 2em;
+  height: 1.75em;
+  vertical-align: top;
 }
 
 .ol-search ul {
   font-size: 0.6em;
+  position: absolute;
 }
 
 .ol-zoom {
