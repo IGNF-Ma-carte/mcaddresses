@@ -219,3 +219,38 @@ text-align: center;
 #csv_load {
 margin-right: 0.5em;
 }
+
+#citySearch .ol-search {
+  position: relative;
+  font-size: 1.2em;
+}
+#citySearch input[type=search] {
+  width: 100%;
+  height: 39px;
+  padding: 1em 1em 1em 2.4em;
+  font-size: 1em;
+  font-style: normal;
+}
+#citySearch .ol-search::after {
+  content: "\e914";
+  color: rgb(221, 225, 230);
+  font-family: font-ign;
+  font-size: 1.3em;
+  position: absolute;
+  top: 0.35em;
+  left: 0.58em;
+}
+#citySearch .ol-search .autocomplete {
+  font-size: 0.9em;
+  position: absolute;
+  box-shadow: 1px 1px 3px 1px #999;
+}
+#citySearch .ol-search .autocomplete li.select,
+#citySearch .ol-search .autocomplete li:hover {
+  background-color: #7eb9f7 ;
+  color: #333;
+}
+
+#citySearch .ol-search.ol-collapsed .autocomplete {
+  display: none;
+}

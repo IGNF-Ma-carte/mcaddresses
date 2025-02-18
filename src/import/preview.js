@@ -30,9 +30,9 @@ const preview = function (csv) {
     });
 
     var search = new SearchGeoportail({
-        className : "hidden",
+        className : "IGNF hidden",
         target : document.getElementById("citySearch"),
-        reverse: true
+        // reverse: true
       });
     carte.map.addControl (search);
     search.on("select", function(e) {
