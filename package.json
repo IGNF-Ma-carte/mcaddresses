@@ -1,6 +1,6 @@
 {
   "name": "mcaddresses",
-  "version": "4.4.4",
+  "version": "4.5.0",
   "description": "Geocodeur de fichiers d'adresses",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
@@ -21,8 +21,7 @@
     "process": "^0.11.10"
   },
   "dependencies": {
-    "mcutils": "github:IGNF-Ma-carte/mcutils",
-    "xlsx": "^0.18.2"
+    "mcutils": "git+https://github.com/IGNF-Ma-carte/mcutils.git#ol10"
   },
   "staticFiles": {
     "staticPath": "./assets",
