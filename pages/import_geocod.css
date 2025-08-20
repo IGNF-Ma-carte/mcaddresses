@@ -44,6 +44,12 @@
   margin-top: 0.5em;
 }
 
+#fichier_txt .warning {
+  max-width: 30em;
+  margin: 1em auto 0;
+  font-style: italic;
+}
+
 [class^="fi-"] {
   font: normal normal normal 14px/1 Font-IGN;
 }
