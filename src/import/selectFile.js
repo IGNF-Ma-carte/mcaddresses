@@ -8,6 +8,7 @@ import helpStr from '../help';
 import exemple from './../data/exemple';
 
 var parseResults;
+var importedFile;
 
 /**
  * Réinitialisation de la variable "parseResults"
@@ -15,8 +16,6 @@ var parseResults;
 var clearParseResults = function() {
     parseResults = false;
 }
-
-var importedFile;
 
 /**
  * Réinitialisation de la variable "importedFile"
@@ -82,6 +81,7 @@ const actionWindow = function () {
   
     // Event à la sélection d'un fichier
     document.getElementById("chargement_f").addEventListener("change", (e) => {
+        console.log(e.target.files[0]);
         if (e.target.files[0].name.match(/\.xls[x]{0,1}$/)
             || e.target.files[0].name.match(/\.ods$/)
             || e.target.files[0].name.match(/\.txt$/)
@@ -92,10 +92,19 @@ const actionWindow = function () {
             document.getElementById("fichier_img").classList.remove("fi-close");
             document.getElementById("fichier").classList.remove("red");
             document.getElementById("fichier_img").classList.add("fi-table");
-            document.getElementById("fichier_txt").innerHTML = e.target.files[0].name
-            + "</br>"
-            + Math.round(e.target.files[0].size / 1000)
-            + "ko";
+            console.log(e.target.files[0].size);
+            const size = e.target.files[0].size > 1024*1024 
+                ? Math.round(e.target.files[0].size / 1024/1024) +' Mo' 
+                : Math.round(e.target.files[0].size / 1024) + 'ko';
+            // 30 Mo warning
+            const warning = (e.target.files[0].size > 30*1024*1024) 
+                ? `<p class='red'>
+                    Attention, le fichier que vous avez choisi est assez volumineux (` + size + `).
+                    <br/>
+                    Son chargement et son traitement pourraient être longs et entrainer des erreurs.
+                </p>` 
+                : '';
+            document.getElementById("fichier_txt").innerHTML = e.target.files[0].name + '</br>'  + size + warning;
             document.getElementById("fichier_txt").style.marginTop = "0";
         }
         else {
