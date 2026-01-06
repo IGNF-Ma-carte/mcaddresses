@@ -14,7 +14,6 @@ import { altiGeocode} from "./alticodage.js";
 import { addFeat } from "./features.js";
 import { setList } from "../liste_adresses/setList.js";
 
-var geocodage = {};
 
 var stopGeocode = false;
 
@@ -40,22 +39,31 @@ const getFeatureIndex = function(f) {
  */
 const clearGeocodage = function() {
   stopGeocode = false;
-  geocodage = {};
-  geocodage.altitude = undefined;
-  geocodage.type = undefined;
-  geocodage.truegeometry = undefined;
-  geocodage.pointFilter = undefined;
-  geocodage.packLength = 100;
-  geocodage.getFeatureIndex = getFeatureIndex;
-  geocodage.results = { olFeatures: [], apiFeatures : [] };
-  geocodage.results.tryAgain = [];
-  window.geoc = geocodage;
+//   geocodage = {};
+  delete geocodage.altitude;
+  delete geocodage.type;
+  delete geocodage.truegeometry;
+  delete geocodage.pointFilter;
+  // geocodage.packLength = 100;
+  // geocodage.getFeatureIndex = getFeatureIndex;
+  geocodage.results = { apiFeatures: [], olFeatures: [], apiFeatures : [], tryAgain: [] };
+  geocodage.first = true;
 };
 
-geocodage.packLength = 100;
-geocodage.getFeatureIndex = getFeatureIndex;
-geocodage.results = { apiFeatures: [], olFeatures: [], apiFeatures : [] };
-geocodage.results.tryAgain = [];
+/** Geocode object */
+var geocodage = {
+  packLength: 5,
+  /* 
+    Temps en ms entre chaque paquet de requêtes : 50 requetes / secondes (lmite de l'API de géocodage)
+    1000 ms / 50 req = 20 ms entre chaque requeete
+    Pour un paquet de 5 requetes : 5 * 20 ms = 100 ms
+  */  
+  timeout: 105, 
+  first: true,
+  getFeatureIndex: getFeatureIndex,
+  results: { apiFeatures: [], olFeatures: [], apiFeatures : [], tryAgain: [] },
+};
+
 window.geoc = geocodage;
 
 /**
@@ -66,19 +74,27 @@ window.geoc = geocodage;
  */
 Promise.delay = function(val, t) {
   if(!t) {
-    t = 15000;
+    t = 150000;
   }
   return new Promise(resolve => {
       setTimeout(resolve.bind(null, val), t);
   });
 };
 
+
 /**
  * Géocodage des adresses tirées d'un fichier parsée
  * Les géocodages sont effectués par paquet de 100 adresses
+ * @param {boolean} [force=false] : booléen pour forcer le géocodage sans delai
  */
- const geocode = function() {
-  //Paquet de 100 requêtes à envoyer à l'API de géocodage
+ const geocode = function(force) {
+  if (!force && !geocodage.first) {
+    // Timeout pour 50 requêtes / secondes (limite de l'API de géocodage)
+    setTimeout(() => {  geocode(true);}, geocodage.timeout);
+    return;
+  }
+  geocodage.first = false;
+  //Paquet de requêtes à envoyer à l'API de géocodage
   var proms_batch = requestListByPack[geocodage.currentPack].map(url => fetch(url, { method: 'GET', mode: 'cors', cache: 'default' }));
   //On ajoute un timeout pour ces requêtes
   var timeout_proms_batch = proms_batch.map(p => {return Promise.race([p, Promise.delay({ok: false})])});
