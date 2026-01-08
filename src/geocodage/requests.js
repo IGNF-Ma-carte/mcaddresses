@@ -16,57 +16,40 @@ var setRequestListByPack = function(val) {
 var altiRequestListByPack;
 
 /**
- * Renvoie l'url des requêtes de géocodage par paquet d'array de taille 100
+ * Renvoie l'url des requêtes de géocodage par paquet 
  * @param {array} data : les données parsées
  * @param {string} geocodingType : le type de géocodage (address ou poi)
  * @returns {array of array} les requêtes par paquet de 100
  */
  const createRequestListByPack = function(data, geocodingType) {
     var rqstList = [];
-  
-    var recursive_fct = function (d, start) {
-      var end = start + geocodage.packLength;
-      
-      if (d.length < start + geocodage.packLength) {
-        end = d.length;
-      }
-  
-      rqstList.push(createRequestList(d.slice(start, end), geocodingType));
-  
-      if (d.length > end) {
-        return recursive_fct(d, end);
-      }
-      else {
-        return rqstList;
-      }
-    };
-    return recursive_fct(data, 0);
+
+    var start = 0;
+    while(start < data.length) {
+      var end = Math.min(data.length, start + geocodage.packLength);
+      rqstList.push(createRequestList(data.slice(start, end), geocodingType));
+      start = end;
+    }
+
+    return rqstList;
   };
 
-  /**
- * Récupère l'url des requêtes d'alticodage par paquet d'array de taille 100
- * @returns {array of array} les requêtes par paquet de 100
+/**
+ * Récupère l'url des requêtes d'alticodage par paquet 
+ * @returns {array of array} les requêtes par paquet 
  */
 const createAltiRequestListByPack = function() {
     var data = geocodage.results.olFeatures;
     var rqstList = [];
-    var recursive_fct = function(d, start) {
-      var end = start + geocodage.packLength;
-  
-      if (d.length < start + geocodage.packLength) {
-        end = d.length;
-      }
-  
+
+    var start = (geocodage.currentPack - 1) * geocodage.packLength;
+    while (start < data.length) {
+      var end = Math.min (data.length, start + geocodage.packLength);
       rqstList.push(createAltiRequestList(data.slice(start, end)));
-  
-      if (d.length > end) {
-        return recursive_fct(d, end);
-      }
-      else {
-        return rqstList;
-      }
+      start = end;
     }
-    return recursive_fct(data, (geocodage.currentPack - 1) * geocodage.packLength);
+    return rqstList;
+    // return recursive_fct(data, (geocodage.currentPack - 1) * geocodage.packLength);
   };
   
   /**

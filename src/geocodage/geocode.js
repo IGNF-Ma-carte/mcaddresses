@@ -84,15 +84,16 @@ Promise.delay = function(val, t) {
 
 /**
  * Géocodage des adresses tirées d'un fichier parsée
- * Les géocodages sont effectués par paquet de 100 adresses
+ * Les géocodages sont effectués par paquet de x adresses
  * @param {boolean} [force=false] : booléen pour forcer le géocodage sans delai
  */
  const geocode = function(force) {
   if (!force && !geocodage.first) {
     // Timeout pour 50 requêtes / secondes (limite de l'API de géocodage)
-    setTimeout(() => {  geocode(true);}, geocodage.timeout);
+    setTimeout(() => {  geocode(true); }, geocodage.timeout);
     return;
   }
+  console.log('geocode');
   geocodage.first = false;
   //Paquet de requêtes à envoyer à l'API de géocodage
   var proms_batch = requestListByPack[geocodage.currentPack].map(url => fetch(url, { method: 'GET', mode: 'cors', cache: 'default' }));
