@@ -44,6 +44,7 @@ const clearGeocodage = function() {
   delete geocodage.type;
   delete geocodage.truegeometry;
   delete geocodage.pointFilter;
+  delete geocodage.error;
   // geocodage.packLength = 100;
   // geocodage.getFeatureIndex = getFeatureIndex;
   geocodage.results = { apiFeatures: [], olFeatures: [], apiFeatures : [], tryAgain: [] };
