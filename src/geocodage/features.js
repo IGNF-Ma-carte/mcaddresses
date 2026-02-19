@@ -98,7 +98,7 @@ import { isParcel } from "../modification_adresse/address_fct";
     
   
     for(let i in parseResults.header) {
-      feat._data[parseResults.header[i]] = data[i];
+      feat._data[parseResults.header[i]] = data ? data[i] : 0;
     }
       //retourne la feature avec les attributs qui vont bien pour la création de la liste d'adresses
       return setPropertiesForList(feat);

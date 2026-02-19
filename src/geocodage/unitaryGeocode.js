@@ -18,7 +18,7 @@ import { listCtrl } from "../liste_adresses/setList";
  * @param {integer} ind : l'indice de la feature associée à la donnée dans la variable "geocodage.results.feature"
  *                        Si la valeur est -1, la feature associée n'existe pas encore dans la variable
  */
- const unitaryGeocode = function(data, ind) {
+ const unitaryGeocode = function(data, ind, cback) {
   var geocodingType = "address";
   if(geocodage.type == "parcel") {
     geocodingType = "parcel";
@@ -44,7 +44,11 @@ import { listCtrl } from "../liste_adresses/setList";
           else {
             geocodage.results.apiFeatures[ind] = formatAddress(); 
           }
-          endUnitaryGeocodAction(geocodage.results.apiFeatures[ind], data[0], ind);
+          if (cback) {
+            cback(geocodage.results.apiFeatures[ind], data[0], ind);
+          } else {
+            endUnitaryGeocodAction(geocodage.results.apiFeatures[ind], data[0], ind);
+          }
           return;
         }
         Promise.all(r.map(resp => resp.json()))
@@ -57,7 +61,11 @@ import { listCtrl } from "../liste_adresses/setList";
           else { 
             geocodage.results.apiFeatures[ind] = formatAddress(); 
           }
-          endUnitaryGeocodAction(geocodage.results.apiFeatures[ind], data[0], ind);
+          if (cback) {
+            cback(geocodage.results.apiFeatures[ind], data[0], ind);
+          } else {
+            endUnitaryGeocodAction(geocodage.results.apiFeatures[ind], data[0], ind);
+          }
           return;
         }
   
@@ -105,10 +113,14 @@ import { listCtrl } from "../liste_adresses/setList";
         }
   
         if (geocodage.results.tryAgain.length && !parseResults.columnCorrespondance["[Numéro de parcelle]"]) {
-          unitaryGeocodeAgain(createRequestList(data, "address", false, true), data, ind, true);
+          unitaryGeocodeAgain(createRequestList(data, "address", false, true), data, ind, true, cback);
         }
         else {
-          endUnitaryGeocodAction(geocodage.results.apiFeatures[ind], data[0], ind);
+          if (cback) {
+            cback(geocodage.results.apiFeatures[ind], data[0], ind);
+          } else {
+            endUnitaryGeocodAction(geocodage.results.apiFeatures[ind], data[0], ind);
+          }
         }
       })
     })
@@ -120,8 +132,9 @@ import { listCtrl } from "../liste_adresses/setList";
    * @param {array} data : la donnée parsée
    * @param {integer} ind : l'indice de la feature associée à la donnée dans la variable "geocodage.results.feature" 
    * @param {booléen} firstIteration : booléen pour savoir si c'est la première fois que l'on rentre dans cette fonction pour une adresse donnée 
+   * @param {function} [cback]
    */
-  const unitaryGeocodeAgain = function(rqstList, data, ind, firstIteration) {
+  const unitaryGeocodeAgain = function(rqstList, data, ind, firstIteration, cback) {
     var proms_batch = rqstList.map(url => fetch(url, { method: 'GET', mode: 'cors', cache: 'default' }));
     var timeout_proms_batch = proms_batch.map(p => {return Promise.race([p, Promise.delay({ok: false})])});
   
@@ -136,7 +149,11 @@ import { listCtrl } from "../liste_adresses/setList";
         Promise.all(r.map(resp => resp.json()))
       .then(function (res) {
         if(!res || !res.length) {
-          endUnitaryGeocodAction(geocodage.results.apiFeatures[ind], data[0], ind);
+          if (cback) {
+            cback(geocodage.results.apiFeatures[ind], data[0], ind);
+          } else {
+            endUnitaryGeocodAction(geocodage.results.apiFeatures[ind], data[0], ind);
+          }
           return;
         }
         var tryOnceMore = [];
@@ -175,7 +192,7 @@ import { listCtrl } from "../liste_adresses/setList";
         geocodage.results.tryAgain = tryOnceMore;
 
         if(geocodage.results.tryAgain.length && firstIteration) {
-          unitaryGeocodeAgain(createRequestList(data, "poi"), data, ind);
+          unitaryGeocodeAgain(createRequestList(data, "poi"), data, ind, false, cback);
         }
 
         else if(geocodage.results.tryAgain.length) {
@@ -184,10 +201,14 @@ import { listCtrl } from "../liste_adresses/setList";
           newCities.push(geocodage.results.tryAgain[0][1]);
       
           geocodage.stopTrying = true;
-          unitaryGeocodeAgain(createRequestList(data, "address", newCities), data, ind);
+          unitaryGeocodeAgain(createRequestList(data, "address", newCities), data, ind, false, cback);
         }
         else {
+          if (cback) {
+            cback(geocodage.results.apiFeatures[ind], data[0], ind);
+          } else {
             endUnitaryGeocodAction(geocodage.results.apiFeatures[ind], data[0], ind);
+          }
         }
       });
     })

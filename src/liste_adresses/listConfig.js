@@ -10,13 +10,15 @@ const setButtonConfig = function() {
     listCtrl.set("hidden_columns", []);
     //création du bouton et ajout dans le header de la liste
     let header = document.querySelector(".ol-feature-list .ol-header p");
-    let button = document.createElement("i");
-    button.classList.add("fi-configuration");
-    button.id = "list_config";
-    button.title = "Affichage des colonnes";
-    header.append(button);
-    //Event listener du bouton de paramétrage
-    button.addEventListener("click", configButtonEvent);
+    if (!header.querySelector("#list_config")) {
+        let button = document.createElement("i");
+        button.classList.add("fi-configuration");
+        button.id = "list_config";
+        button.title = "Affichage des colonnes";
+        header.append(button);
+        //Event listener du bouton de paramétrage
+        button.addEventListener("click", configButtonEvent);
+    }
 };
 
 /**

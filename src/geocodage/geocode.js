@@ -11,9 +11,9 @@ import { getScoreCount, getReportHtml } from "./report.js";
 import {createAddress, createRequestList} from "./requests.js";
 import { calcIndice } from "./scoreWeighting.js";
 import { altiGeocode} from "./alticodage.js";
-import { addFeat } from "./features.js";
+import { addFeat, createFeat } from "./features.js";
 import { setList } from "../liste_adresses/setList.js";
-
+import { unitaryGeocode } from "./unitaryGeocode.js";
 
 var stopGeocode = false;
 
@@ -93,7 +93,6 @@ Promise.delay = function(val, t) {
     setTimeout(() => {  geocode(true); }, geocodage.timeout);
     return;
   }
-  console.log('geocode');
   geocodage.first = false;
   //Paquet de requêtes à envoyer à l'API de géocodage
   var proms_batch = requestListByPack[geocodage.currentPack].map(url => fetch(url, { method: 'GET', mode: 'cors', cache: 'default' }));
@@ -335,7 +334,8 @@ const geocodeAgain = function (rqstList, firstIteration) {
       }
     })
     .catch(error => {
-      console.error(error);
+      console.log(error);
+      // console.error(error);
     });
   })
   .catch(error => {
@@ -401,19 +401,58 @@ const getBestScoreIndex = function(elem, data) {
 /**
  * Actions à effectuer à la fin d'un géocodage
  */
- const endGeocodAction = function() {
-  if(!geocodage.altitude){
+ const endGeocodAction = function(b) {
+  var initData = parseResults.data;
+  if(!b && !geocodage.altitude){
     geocodage.currentPack++;
     addFeat();
   }
   dialog.set("max", false);
-  dialog.show({content: getReportHtml(), className: "rapport", progress: 0,
-              buttons: {cancel: 'Fermer'},
-                          onButton: (click) => {
-                            if(click == "cancel") {
-                              dialog.close();
-                            }
-                          }
+  // Geocode errors
+  let nbErrors = 0;
+  geocodage.results.apiFeatures.forEach((feat, i) => {
+    if (feat._score === 0) {
+      nbErrors++;
+    }
+  });
+  const buttons = nbErrors ? { cancel: 'Fermer', again: 'Relancer les géocodages en erreur ('+nbErrors+')' } : { cancel: 'Fermer' };
+  // Dialog de rapport de géocodage
+  dialog.show({
+    content: getReportHtml(), 
+    className: "rapport", 
+    progress: 0,
+    buttons: buttons,
+    onButton: (click) => {
+      if (click == "cancel") {
+        dialog.close();
+      } else if (click == "again") {
+        dialog.close();
+        var data = [];
+        geocodage.results.apiFeatures.forEach((feat, i) => {
+          if (feat._score === 0) {
+            data.push(i);
+          }
+        });
+        parseResults.data = initData;
+        function donext(index) {
+          if (index === undefined) {
+            endGeocodAction(true);
+          } else {
+            var feature = geocodage.results.olFeatures[index];
+            var d = [];
+            parseResults.header.forEach(col => {   
+              d.push(feature._data[col]);
+            });
+            
+            unitaryGeocode([d], index, (res) => {
+              geocodage.results.olFeatures[index] = createFeat(res, d);
+              donext(data.pop());
+            });
+          }
+        }
+        donext(data.pop());
+      }
+    }
   });
 
   var scoreCount = getScoreCount();
@@ -421,15 +460,15 @@ const getBestScoreIndex = function(elem, data) {
   new Chart(ctx, {
     type: 'doughnut',
     data: {
-        labels: ['Très bon', 'Bon', 'Moyen', 'Pas géolocalisée'],
-        datasets: [{
-            label: 'Score du géocodage',
-            data: [ scoreCount.veryGood, scoreCount.good, scoreCount.medium, scoreCount.noGeoc ],
-            backgroundColor: [ colors.veryGood, colors.good, colors.medium, colors.noGeoc ],
-            borderColor: [ colors.veryGood, colors.good, colors.medium, colors.noGeoc ],
-            borderWidth: 1
-        }]
-      },
+      labels: ['Très bon', 'Bon', 'Moyen', 'Pas géolocalisée'],
+      datasets: [{
+        label: 'Score du géocodage',
+        data: [ scoreCount.veryGood, scoreCount.good, scoreCount.medium, scoreCount.noGeoc ],
+        backgroundColor: [ colors.veryGood, colors.good, colors.medium, colors.noGeoc ],
+        borderColor: [ colors.veryGood, colors.good, colors.medium, colors.noGeoc ],
+        borderWidth: 1
+      }]
+    },
     options: {
       plugins: {
         legend: {
