@@ -65,6 +65,7 @@ var geocodage = {
   results: { apiFeatures: [], olFeatures: [], apiFeatures : [], tryAgain: [] },
 };
 
+let initData = null;
 window.geoc = geocodage;
 
 /**
@@ -399,11 +400,42 @@ const getBestScoreIndex = function(elem, data) {
   return alternatives;
 };
 
+/** Unitary geocode a set of data
+ */
+function geocodeError() {
+  parseResults.data = initData;
+  var data = [];
+  geocodage.results.apiFeatures.forEach((feat, i) => {
+    if (feat._score === 0) {
+      data.push(i);
+    }
+  });
+  // adresse suivante
+  function donext(index) {
+    if (index === undefined) {
+      // cback();
+      endGeocodAction(true);
+      return;
+    } else {
+      var feature = geocodage.results.olFeatures[index];
+      var d = [];
+      parseResults.header.forEach(col => {   
+        d.push(feature._data[col]);
+      });
+      
+      unitaryGeocode([d], index, (res) => {
+        geocodage.results.olFeatures[index] = createFeat(res, d);
+        donext(data.pop());
+      });
+    }
+  }
+  donext(data.pop());
+}
 /**
  * Actions à effectuer à la fin d'un géocodage
  */
  const endGeocodAction = function(b) {
-  var initData = parseResults.data;
+  initData = parseResults.data;
   if(!b && !geocodage.altitude){
     geocodage.currentPack++;
     addFeat();
@@ -421,37 +453,14 @@ const getBestScoreIndex = function(elem, data) {
   dialog.show({
     content: getReportHtml(), 
     className: "rapport", 
-    progress: 0,
+    progress: false,
     buttons: buttons,
     onButton: (click) => {
-      if (click == "cancel") {
+      if (click === "cancel") {
         dialog.close();
-      } else if (click == "again") {
+      } else if (click === "again") {
         dialog.close();
-        var data = [];
-        geocodage.results.apiFeatures.forEach((feat, i) => {
-          if (feat._score === 0) {
-            data.push(i);
-          }
-        });
-        parseResults.data = initData;
-        function donext(index) {
-          if (index === undefined) {
-            endGeocodAction(true);
-          } else {
-            var feature = geocodage.results.olFeatures[index];
-            var d = [];
-            parseResults.header.forEach(col => {   
-              d.push(feature._data[col]);
-            });
-            
-            unitaryGeocode([d], index, (res) => {
-              geocodage.results.olFeatures[index] = createFeat(res, d);
-              donext(data.pop());
-            });
-          }
-        }
-        donext(data.pop());
+        geocodeError();
       }
     }
   });
@@ -461,12 +470,12 @@ const getBestScoreIndex = function(elem, data) {
   new Chart(ctx, {
     type: 'doughnut',
     data: {
-      labels: ['Très bon', 'Bon', 'Moyen', 'Pas géolocalisée'],
+      labels: ['Très bon', 'Bon', 'Moyen', 'Pas géolocalisée', 'Manuel'],
       datasets: [{
         label: 'Score du géocodage',
-        data: [ scoreCount.veryGood, scoreCount.good, scoreCount.medium, scoreCount.noGeoc ],
-        backgroundColor: [ colors.veryGood, colors.good, colors.medium, colors.noGeoc ],
-        borderColor: [ colors.veryGood, colors.good, colors.medium, colors.noGeoc ],
+        data: [ scoreCount.veryGood, scoreCount.good, scoreCount.medium, scoreCount.noGeoc, scoreCount.manual ],
+        backgroundColor: [ colors.veryGood, colors.good, colors.medium, colors.noGeoc, colors.manual ],
+        borderColor: [ colors.veryGood, colors.good, colors.medium, colors.noGeoc, colors.manual ],
         borderWidth: 1
       }]
     },
@@ -487,4 +496,4 @@ const getBestScoreIndex = function(elem, data) {
   parseResults.data = null;
 };
 
-export {geocodage, stopGeocode, setStopGeocode, clearGeocodage, geocode, getBestScoreIndex, getAlternatives, endGeocodAction};
+export {geocodage, geocodeError, stopGeocode, setStopGeocode, clearGeocodage, geocode, getBestScoreIndex, getAlternatives, endGeocodAction};

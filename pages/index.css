@@ -471,18 +471,28 @@ background-color: #E9ECEF;
   box-shadow: inset 1px 1px #DDE1E6, 0 1px #DDE1E6;
 }
 
-.ol-feature-list .ol-header .fi-configuration:hover {
-  background-color: lightgray;
-  cursor: pointer;
-}
-
-.ol-feature-list .ol-header .fi-configuration{
-  position: relative;
-  float: right;
-  margin-right: 1em ;
-  top: 0.3em;
-}
 
 .hidden {
   display: none!important;
+}
+
+.ol-feature-list .ol-content .ol-header .ol-buttons {
+  margin: 0 1em;
+  text-align: center;
+}
+.ol-feature-list .ol-content .ol-header .ol-buttons button {
+  height: 2em;
+  line-height: 2em;
+  min-width: 2em;
+  text-align: center;
+  vertical-align: middle;
+  border-radius: 5px;
+  margin: 0;
+}
+.ol-feature-list .ol-header .ol-buttons button:hover {
+  background-color: lightgray;
+  cursor: pointer;
+}
+.ol-feature-list .ol-content .ol-header .ol-buttons .ol-closebox {
+  display: none;
 }

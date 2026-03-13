@@ -6,11 +6,13 @@ import { geocodage, stopGeocode } from "./geocode";
  * @returns {object}
  */
  const getScoreCount = function() {
-    var scoreCount = {"veryGood": 0, "good": 0, "medium": 0, "noGeoc": 0, "ignore": 0};
+    var scoreCount = {"veryGood": 0, "good": 0, "medium": 0, "noGeoc": 0, "ignore": 0, "manual": 0};
   
     for(var i in geocodage.results.apiFeatures) {
       if(geocodage.results.apiFeatures[i]) {
-        if(geocodage.results.apiFeatures[i]._score > 0.8) {
+        if(geocodage.results.apiFeatures[i]._score > 2) {
+          scoreCount.manual++;
+        } else if(geocodage.results.apiFeatures[i]._score > 0.8) {
           scoreCount.veryGood++;
         }
         else if(geocodage.results.apiFeatures[i]._score > 0.5) {
@@ -23,7 +25,7 @@ import { geocodage, stopGeocode } from "./geocode";
     }
   
     scoreCount.noGeoc = geocodage.results.apiFeatures.length - scoreCount.veryGood - scoreCount.good - scoreCount.medium;
-    scoreCount.ignore = parseResults.data.length - geocodage.results.apiFeatures.length;
+    scoreCount.ignore = parseResults.data ? parseResults.data.length - geocodage.results.apiFeatures.length : 0;
   
     return scoreCount;
   };
@@ -56,6 +58,12 @@ import { geocodage, stopGeocode } from "./geocode";
     }
     else {
       html+= "<p><i class='fi-location medium_points'></i><span>" + scoreCount.medium + " adresses</span> sont géocodées avec un score moyen</p>";
+    }
+    if(scoreCount.manual < 2) {
+      html+= "<p><i class='fi-location medium_points'></i><span>" + scoreCount.manual + " adresse</span> est géocodée manuellemenr</p>";
+    }
+    else {
+      html+= "<p><i class='fi-location medium_points'></i><span>" + scoreCount.manual + " adresses</span> sont géocodées manuellemenr</p>";
     }
     if(scoreCount.noGeoc < 2) {
       html+= "<p><i class='fi-location no_point'></i><span>" + scoreCount.noGeoc + " adresse</span> n'a pas pu être géocodée</p>";
