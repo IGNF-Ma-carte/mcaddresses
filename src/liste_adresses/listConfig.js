@@ -70,7 +70,6 @@ function showInfo() {
         progress: false,
         buttons: buttons,
         onButton: (click) => {
-            console.log (click);
             switch (click){
                 case 'again': {
                     dialog.close();

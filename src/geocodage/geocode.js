@@ -14,6 +14,7 @@ import { altiGeocode} from "./alticodage.js";
 import { addFeat, createFeat } from "./features.js";
 import { setList } from "../liste_adresses/setList.js";
 import { unitaryGeocode } from "./unitaryGeocode.js";
+import { getFeatureLayer } from "../carte.js";
 
 var stopGeocode = false;
 
@@ -424,7 +425,9 @@ function geocodeError() {
       });
       
       unitaryGeocode([d], index, (res) => {
-        geocodage.results.olFeatures[index] = createFeat(res, d);
+        const f = createFeat(res, d);
+        geocodage.results.olFeatures[index] = f;
+        getFeatureLayer().getSource().addFeature(f);
         donext(data.pop());
       });
     }
